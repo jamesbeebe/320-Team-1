@@ -1,4 +1,4 @@
-import { supabase } from "../utils/supabase.js";
+import { supabase } from "../supabase-client.js";
 export class ChatManager {
   static instance = null;
 
@@ -42,6 +42,7 @@ export class ChatManager {
         .single();
 
       if (error) {
+        // this will throw an error if there is no rows as single expects at least one row
         console.error(`Invalid chat ID ${chatId}:`, error);
         ws.close(1008, "chat id not found");
         return;
@@ -73,17 +74,13 @@ export class ChatManager {
 
   async handleMessage(ws, room, chatId, data) {
     try {
+      console.log("message --->", data);
       const message = JSON.parse(data);
-
-      console.log("user: ", message.user);
-      console.log("time: ", message.time);
-      console.log("message: ", message.message);
-
-      const {data, error} = await supabase.from("messages").insert({
+      const { d, error } = await supabase.from("messages").insert({
         chat_id: chatId,
-        user: message.user_id,
+        user_id: message.user_id,
         timestamp: message.timestamp,
-        content: message.message,
+        content: message.content,
       });
 
       if (error) {
@@ -98,8 +95,6 @@ export class ChatManager {
           client.send(JSON.stringify({ chatId, ...message }));
         }
       }
-
-      
     } catch (err) {
       console.error("Invalid message:", err);
     }
