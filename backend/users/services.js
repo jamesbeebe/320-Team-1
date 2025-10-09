@@ -9,20 +9,20 @@ const supabase = createClient(
 export async function getUserTable(){
     const result = await supabase.from("user_table").select("*");
     if(result.error || !result.data){
-        throw new Error("Error getting user data.");
+        res.status(500).send("Error retrieving user data.");
     }
     else{
         userData = result.data;
-        return userData;
+        res.status(200).send("Successfully retrieved user data.");
     }
 }
 export async function postUserTable(user){
     const result = await supabase.from("user_table").insert(user).select();
     if(result.error || !result.data){
-        throw new Error("Error posting user data.");
+        res.status(500).send("Error posting user data.");
     }
     else{
         postedData = result.data;
-        return postedData[0];
+        res.status(200).send("Successfully posted user data.");
     }
 }
