@@ -1,9 +1,9 @@
 import { supabase } from "../supabase-client.js";
 
-async function getMessage(chatId, startDate,endDate) {
+export async function getMessage(chatId, startDate,endDate) {
     const {data, error} = await supabase.from("messages").select(`
         timestamp,
-        content
+        content,
         users (name)
         `)
         .eq("chat_id", chatId)
