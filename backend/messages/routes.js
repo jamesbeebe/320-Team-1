@@ -10,13 +10,13 @@ messageRouter.get("/:chatId", async (req, res) => {
   // Set default startDate to start of yesterday (00:00:00.000)
   if (!startDate) {
     const d = new Date();
-    d.setUTCHours(0, 0, 0, 0);
-    d.setUTCDate(d.getUTCDate() - 1);
+    d.setHours(0, 0, 0, 0);
+    d.setDate(d.getDate() - 1);
     startDate = d.toISOString();
   }
 
   // Set default endDate to end of today (23:59:59.999)
-  if (!endDate) {  
+  if (!endDate) {
     const today = new Date();
     today.setHours(23, 59, 59, 999);
     endDate = today.toISOString();
