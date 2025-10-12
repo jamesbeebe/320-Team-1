@@ -1,5 +1,6 @@
 import router from "express";
 import { getMessage } from "./controller.js";
+import { log } from "../logs/logger.js";
 
 export const messageRouter = router();
 
@@ -24,6 +25,7 @@ messageRouter.get("/:chatId", async (req, res) => {
 
   const { data, error } = await getMessage(chatId, startDate, endDate);
   if (error) {
+    log("error", `Error getting messages: ${error.message}`);
     return res.status(500).json({ error: error.message });
   }
   return res.status(200).json(data);

@@ -43,12 +43,12 @@ export class ChatManager {
 
       if (error) {
         // this will throw an error if there is no rows as single expects at least one row
-        console.error(`Invalid chat ID ${chatId}:`, error);
+        log("error", `Handle Connection Error: Invalid chat ID ${chatId}: ${error.message}`);
         ws.close(1008, "chat id not found");
         return;
       }
     } catch (err) {
-      console.error(`Error validating chat ID ${chatId}:`, err);
+      log("error", `Handle Connection Error: Error validating chat ID ${chatId}: ${err.message}`);
       ws.close(1011, "Internal server error");
       return;
     }
@@ -61,7 +61,7 @@ export class ChatManager {
     const room = this.chatRooms.get(chatId);
     room.add(ws);
 
-    console.log(`Client connected to chat ${chatId}`);
+    log("info", `Client connected to chat ${chatId}`);
 
     ws.on("message", (data) => {
       this.handleMessage(ws, room, chatId, data);
@@ -74,7 +74,6 @@ export class ChatManager {
 
   async handleMessage(ws, room, chatId, data) {
     try {
-      console.log("message --->", data);
       const message = JSON.parse(data);
       const { d, error } = await supabase.from("messages").insert({
         chat_id: chatId,
@@ -84,7 +83,7 @@ export class ChatManager {
       });
 
       if (error) {
-        console.error("Error saving message to database:", error);
+        log("error", `Error saving message to database: ${error.message}`);
         ws.close(1011, "Internal server error");
         return;
       }
@@ -96,7 +95,9 @@ export class ChatManager {
         }
       }
     } catch (err) {
-      console.error("Invalid message:", err);
+      log("error", `Chat Manager handling message error : ${err.message}`);
+      ws.close(1011, "Internal server error");
+      return;
     }
   }
 
@@ -105,7 +106,7 @@ export class ChatManager {
     if (room.size === 0) {
       this.chatRooms.delete(chatId);
     }
-    console.log(`Client left chat ${chatId}`);
+    log("info", `Client left chat ${chatId}`);
   }
 
   // Utility methods you might find useful
