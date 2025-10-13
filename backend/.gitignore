@@ -1,2 +1,5 @@
 /node_modules
 .env
+
+# the logs should never be committed to the repo.
+logs.txt 
