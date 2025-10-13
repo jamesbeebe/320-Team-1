@@ -1,5 +1,4 @@
 import fs from "fs";
-import path from "path";
 
 function log(severity, message) {
   const timestamp = new Date().toISOString();

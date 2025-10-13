@@ -1,4 +1,5 @@
 import { supabase } from "../supabase-client.js";
+import { log } from "../logs/logger.js";
 export class ChatManager {
   static instance = null;
 
