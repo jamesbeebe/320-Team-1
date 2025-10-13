@@ -1,7 +1,7 @@
 // this contains all the user routes
 import express from "express";
 import { getUserTable, postUserTable, deleteUserTable} from "./services.js";
-const router = express.Router();
+export const router = express.Router();
 router.get("/api/users", async (req, res) => {
     try {
         const users = await getUserTable();
