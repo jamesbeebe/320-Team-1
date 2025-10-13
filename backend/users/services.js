@@ -7,22 +7,25 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 export async function getUserTable(){
-    const result = await supabase.from("user_table").select("*");
-    if(result.error || !result.data){
-        throw new Error("Error getting user data.");
+    const {data, error} = await supabase.from("users").select("*");
+    if(error){
+        throw new Error(error.message);
     }
-    else{
-        userData = result.data;
-        return userData;
-    }
+    return data;
 }
 export async function postUserTable(user){
-    const result = await supabase.from("user_table").insert(user).select();
-    if(result.error || !result.data){
-        throw new Error("Error posting user data.");
+    const {data, error} = await supabase.from("users").insert(user).select();
+    if(error){
+        throw new Error(error.message);
     }
-    else{
-        postedData = result.data;
-        return postedData[0];
-    }
+    return data[0];
 }
+
+export async function deleteUserTable(userId){
+    const {data, error} = await supabase.from('users').delete().eq('id', userId).select();
+    if(error){
+        throw new Error(error.message);
+    }
+    return data[0];
+}
+
