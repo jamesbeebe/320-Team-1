@@ -3,6 +3,8 @@ import http from "http";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
+import { authRouter } from "./auth/routes.js";
+
 export const app = express();
 export const httpServer = http.createServer(app);
 export const websocketServer = new WebSocketServer({
@@ -19,5 +21,7 @@ httpServer.listen(PORT, () => {
   console.log("server is running on port", PORT);
 });
 
+// set up auth route
+app.use("/api/auth", authRouter);
 // set up messages route
 app.use("/api/messages", messageRouter);
