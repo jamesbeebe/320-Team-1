@@ -1,8 +1,11 @@
 import router from "express";
 import { getMessage } from "./controller.js";
 import { log } from "../logs/logger.js";
+import authenticate from "../utils/auth.js";
 
 export const messageRouter = router();
+
+messageRouter.use(authenticate);
 
 messageRouter.get("/:chatId", async (req, res) => {
   const { chatId } = req.params;
