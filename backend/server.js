@@ -13,12 +13,19 @@ export const websocketServer = new WebSocketServer({
 
 const PORT = 3000;
 
+// Middleware to parse JSON request bodies
+app.use(express.json());
+
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
 chatManager.setupWebSocket(websocketServer);
 
 httpServer.listen(PORT, () => {
   console.log("server is running on port", PORT);
+});
+
+app.get("/test", (req, res) => {
+  res.send("Hello World");
 });
 
 // set up auth route
