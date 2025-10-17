@@ -1,2 +1,12 @@
-backend/node_modules
 .env
+.env*.local
+backend/node_modules
+frontend/node_modules
+
+# Frontend Next.js build
+frontend/.next/
+frontend/out/
+frontend/build/
+
+# Backend
+backend/dist/
