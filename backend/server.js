@@ -11,7 +11,7 @@ export const websocketServer = new WebSocketServer({
   server: httpServer,
 });
 
-const PORT = 3000;
+const PORT = 8080;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
