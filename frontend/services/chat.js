@@ -2,44 +2,21 @@ import api from './api';
 
 export const chatService = {
   // Get channels for a class
-  async getChannels(classId) {
-    try {
-      return await api.get(`/chat/channels?classId=${classId}`);
-    } catch (error) {
-      throw error;
-    }
-  },
+  // To do : Issue # 19 
 
+  
   // Get messages for a channel
-  async getMessages(channelId, limit = 50, offset = 0) {
+  async getMessages(channelId, startDate, endDate) {
     try {
-      return await api.get(`/chat/channels/${channelId}/messages?limit=${limit}&offset=${offset}`);
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  // Send a message
-  async sendMessage(channelId, message) {
-    try {
-      return await api.post(`/chat/channels/${channelId}/messages`, { message });
-    } catch (error) {
-      throw error;
-    }
-  },
-
-  // Delete a message
-  async deleteMessage(messageId) {
-    try {
-      return await api.delete(`/chat/messages/${messageId}`);
+      return await api.get(`chat/${channelId}/messages?startDate=${startDate}&endDate=${endDate}`);
     } catch (error) {
       throw error;
     }
   },
 
   // WebSocket connection for real-time chat
-  connectWebSocket(onMessage) {
-    const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001';
+  connectWebSocket(chatId, onMessage) {
+    const WS_URL = process.env.NEXT_PUBLIC_WS_URL || `ws://localhost:8080/chat/${chatId}`;
     const token = api.getToken();
     
     if (!token) {
@@ -47,8 +24,8 @@ export const chatService = {
       return null;
     }
 
-    const ws = new WebSocket(`${WS_URL}?token=${token}`);
-
+    const ws = new WebSocket(`${WS_URL}}`);
+    
     ws.onopen = () => {
       console.log('WebSocket connected');
     };
