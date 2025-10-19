@@ -45,6 +45,7 @@ export default function ChatInterface() {
     e.preventDefault();
     if (messageInput.trim()) {
       // TODO: Send message to backend
+
       console.log('Sending message:', messageInput);
       setMessageInput('');
     }
@@ -94,12 +95,12 @@ export default function ChatInterface() {
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
           {mockMessages.map((msg) => (
-            <div key={msg.id} className={`flex gap-3 ${msg.isOwn ? 'flex-row-reverse' : ''}`}>
+            <div key={msg.id} className={`flex gap-3 ${msg.isOwn ? 'flex-row-reverse text-right' : ''}`}>
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
                 <span className="text-sm font-semibold text-gray-700">{msg.initials}</span>
               </div>
               <div className={`flex-1 ${msg.isOwn ? 'text-right' : ''}`}>
-                <div className="flex items-baseline gap-2 mb-1">
+                <div className= {`flex items-baseline gap-2 mb-1 ${msg.isOwn ? 'justify-end': ''}`}>
                   <span className="font-semibold text-gray-900 text-sm">{msg.sender}</span>
                   <span className="text-xs text-gray-500">{msg.time}</span>
                 </div>
