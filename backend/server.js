@@ -3,7 +3,7 @@ import http from "http";
 import cors from "cors";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
-import { messageRouter } from "./messages/routes.js";
+import { chatRouter } from "./chat/routes.js";
 import { authRouter } from "./auth/routes.js";
 
 export const app = express();
@@ -42,4 +42,4 @@ app.get("/test", (req, res) => {
 // set up auth route
 app.use("/api/auth", authRouter);
 // set up messages route
-app.use("/api/messages", messageRouter);
+app.use("/api/chat/", chatRouter);

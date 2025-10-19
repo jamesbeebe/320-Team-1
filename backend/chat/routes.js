@@ -3,11 +3,20 @@ import { getMessage } from "./controller.js";
 import { log } from "../logs/logger.js";
 import authenticate from "../utils/auth.js";
 
-export const messageRouter = router();
+export const chatRouter = router();
 
-messageRouter.use(authenticate);
+chatRouter.use(authenticate);
 
-messageRouter.get("/:chatId", async (req, res) => {
+chatRouter.get("channels", async (req, res) => {
+  const { data, error } = await getChannels();
+  if (error) {
+    log("error", `Error getting channels: ${error.message}`);
+    return res.status(500).json({ error: error.message });
+  }
+  return res.status(200).json(data);
+});
+
+chatRouter.get(":chatId/messages", async (req, res) => {
   const { chatId } = req.params;
   let { startDate, endDate } = req.query;
 
