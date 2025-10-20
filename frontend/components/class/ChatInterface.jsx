@@ -4,111 +4,108 @@ import { useState, useEffect, useRef } from "react";
 import Card from "@/components/ui/Card";
 import axios from "axios";
 
-// Mock data
+// Mock channels
 const mockChannels = [
   {
     id: "1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0",
     name: "CS 311 General",
     type: "general",
   },
-  { id: 2, name: "Midterm 1 Review", type: "general" },
-  { id: 3, name: "Dynamic Programming", type: "study-group" },
+  { id: "aa36e595-aae4-4a3f-b26e-952549a4d65d", name: "Midterm 1 Review", type: "general" },
+  { id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b", name: "Dynamic Programming", type: "study-group" },
 ];
 
-const userId = "d6154bad-467c-4e71-8def-206c8923cf6f";
+const userId = "57f98ba6-02ac-461b-9a5d-a3a4757a8c64";
 
 export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
   const [channels] = useState(mockChannels);
-  const [messages, setMessages] = useState([]);
+  const [channelMessages, setChannelMessages] = useState({});
   const [selectedChannel, setSelectedChannel] = useState(channels[0]);
   const ws = useRef(null);
-  const fetchMessages = async () => {
-      try {
-        const messagesMap = await populateMessages(selectedChannel.id);
-        setMessages(messagesMap);
-      } catch (error) {
-        console.error("Error loading messages:", error);
-      }
-    };
-
-  useEffect(() => {
-    ws.current = new WebSocket(`ws://localhost:3001/${selectedChannel.id}`);
-
-    ws.current.onopen = () => console.log("Connected to", selectedChannel.id);
-    ws.current.onmessage = (event) => {
-      console.log("Received Message: ", event.data);
-      const data = JSON.parse(event.data);
-      setMessages(prev => [...prev, formatMessage(data)]);
-    };
-    ws.current.onerror = (err) => console.error("WebSocket error:", err);
-
-    fetchMessages();
-
-    return () => {
-      console.log("Disconnecting from", selectedChannel.id);
-      ws.current.close();
-    };
-  }, [selectedChannel]);
 
   const formatMessage = (message) => {
     const user = message.name;
-        const timestamp = new Date(message.timestamp).toLocaleTimeString(
-          "en-US",
-          {
-            hour: "2-digit",
-            minute: "2-digit",
-            hour12: true,
-          }
-        );
+    const timestamp = new Date(message.timestamp).toLocaleTimeString("en-US", {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
 
-        const [firstName, lastName] = user.split(" ");
+    const [firstName, lastName] = user.split(" ");
+    const sender = `${firstName} ${lastName ? lastName[0].toUpperCase() + "." : ""}`;
+    const initials = `${firstName[0].toUpperCase()}${lastName ? lastName[0].toUpperCase() : ""}`;
 
-        const sender = `${firstName} ${
-          lastName ? lastName[0].toUpperCase() + "." : ""
-        }`;
-        const initials = `${firstName[0].toUpperCase()}${
-          lastName ? lastName[0].toUpperCase() : ""
-        }`;
-
-        return {
-          id: message.id,
-          chat_id: message.chat_id,
-          user_id: message.user_id,
-          timestamp,
-          content: message.content,
-          sender,
-          initials,
-          isOwn: message.user_id === userId,
-        };
-  }
-
-  const populateMessages = async (channelId) => {
-    const response = await axios.get(`http://localhost:3001/api/messages/${channelId}`);
-    const messagesResponse = response.data;
-    const messagesMap = await Promise.all(
-      messagesResponse.map((message) => {
-        return formatMessage(message);
-      })
-    );
-    return messagesMap;
+    return {
+      id: message.id,
+      chat_id: message.chat_id,
+      user_id: message.user_id,
+      timestamp,
+      content: message.content,
+      sender,
+      initials,
+      isOwn: message.user_id === userId,
+    };
   };
 
-  const handleSendMessage = (e) => {
-    e.preventDefault();
-    if (messageInput.trim()) {
-      // TODO: Send message to backend
-      ws.current.send(
-        JSON.stringify({
-          user_id: userId,
-          timestamp: new Date().toISOString(),
-          content: messageInput,
-        })
-      );
-      console.log("Sending message:", messageInput);
-      setMessageInput("");
+  // Fetch messages for a specific channel
+  const fetchMessages = async (channelId) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/messages/${channelId}`);
+      const messagesResponse = response.data;
+      const messagesMap = messagesResponse.map(formatMessage);
+      setChannelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
+    } catch (error) {
+      console.error("Error loading messages:", error);
     }
   };
+
+  useEffect(() => {
+    const wsChannel = new WebSocket(`ws://localhost:3001/${selectedChannel.id}`);
+    ws.current = wsChannel;
+
+    wsChannel.onopen = () => console.log("Connected to", selectedChannel.id);
+
+    wsChannel.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const message = data.d || data;
+
+      setChannelMessages((prev) => {
+        const oldMessages = prev[selectedChannel.id] || [];
+        return {
+          ...prev,
+          [selectedChannel.id]: [...oldMessages, formatMessage(message)],
+        };
+      });
+    };
+
+    wsChannel.onerror = (err) => console.error("WebSocket error:", err);
+
+    fetchMessages(selectedChannel.id);
+
+    return () => {
+      console.log("Disconnecting from", selectedChannel.id);
+      wsChannel.close();
+    };
+  }, [selectedChannel]);
+
+  // Handle sending a message
+  const handleSendMessage = (e) => {
+    e.preventDefault();
+    if (!messageInput.trim()) return;
+
+    ws.current.send(
+      JSON.stringify({
+        user_id: userId,
+        timestamp: new Date().toISOString(),
+        content: messageInput,
+      })
+    );
+
+    setMessageInput("");
+  };
+
+  const messages = channelMessages[selectedChannel.id] || [];
 
   return (
     <div className="flex gap-4 h-[600px]">
@@ -117,30 +114,25 @@ export default function ChatInterface() {
         <h3 className="font-semibold text-gray-900 mb-4">Class Channels</h3>
         <div className="space-y-2">
           {channels
-            .filter((channel) => channel.type === "general")
-            .map((channel) => {
-              return (
-                <div
-                  key={channel.id}
-                  onClick={() => {
-                    setSelectedChannel(channel);
-                    fetchMessages();
-                  }}
-                  className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                    selectedChannel.id === channel.id
-                      ? "bg-[#EF5350] text-white"
-                      : "hover:bg-gray-100"
-                  }`}
-                >
-                  {channel.name}
-                </div>
-              );
-            })}
+            .filter((c) => c.type === "general")
+            .map((channel) => (
+              <div
+                key={channel.id}
+                onClick={() => setSelectedChannel(channel)}
+                className={`p-3 rounded-lg cursor-pointer transition-colors ${
+                  selectedChannel.id === channel.id
+                    ? "bg-[#EF5350] text-white"
+                    : "hover:bg-gray-100"
+                }`}
+              >
+                {channel.name}
+              </div>
+            ))}
         </div>
         <h3 className="font-semibold text-gray-900 mt-6 mb-4">Study Groups</h3>
         <div className="space-y-2">
           {channels
-            .filter((channel) => channel.type === "study-group")
+            .filter((c) => c.type === "study-group")
             .map((channel) => (
               <div
                 key={channel.id}
@@ -161,42 +153,36 @@ export default function ChatInterface() {
       <Card className="flex-1 p-6 flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-gray-200 pb-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {selectedChannel.name}
-          </h2>
+          <h2 className="text-xl font-semibold text-gray-900">{selectedChannel.name}</h2>
         </div>
 
         {/* Messages */}
         <div className="flex-1 overflow-y-auto space-y-4 mb-4">
-          {messages.map((msg) => (
+          {messages.map((message) => (
             <div
-              key={msg.id}
-              className={`flex gap-3 ${msg.isOwn ? "flex-row-reverse" : ""}`}
+              key={message.id}
+              className={`flex gap-3 ${message.isOwn ? "flex-row-reverse" : ""}`}
             >
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-semibold text-gray-700">
-                  {msg.initials}
-                </span>
+                <span className="text-sm font-semibold text-gray-700">{message.initials}</span>
               </div>
-              <div className={`flex-1 ${msg.isOwn ? "text-right" : ""}`}>
+              <div className={`flex-1 ${message.isOwn ? "text-right" : ""}`}>
                 <div
                   className={`flex items-baseline gap-2 mb-1 ${
-                    msg.isOwn ? "justify-end" : ""
+                    message.isOwn ? "justify-end" : ""
                   }`}
                 >
-                  <span className="font-semibold text-gray-900 text-sm">
-                    {msg.sender}
-                  </span>
-                  <span className="text-xs text-gray-500">{msg.timestamp}</span>
+                  <span className="font-semibold text-gray-900 text-sm">{message.sender}</span>
+                  <span className="text-xs text-gray-500">{message.timestamp}</span>
                 </div>
                 <div
                   className={`inline-block px-4 py-2 rounded-lg ${
-                    msg.isOwn
+                    message.isOwn
                       ? "bg-[#EF5350] text-white"
                       : "bg-gray-100 text-gray-900"
                   }`}
                 >
-                  {msg.content}
+                  {message.content}
                 </div>
               </div>
             </div>
