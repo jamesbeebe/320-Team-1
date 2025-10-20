@@ -13,17 +13,17 @@ router.get("/api/users", async (req, res) => {
         console.error("Error fetching users:", error);
     }
 });
-// router.post("/api/users", async (req, res) => {
-//     try {
-//         const user = req.body; // Access the user data sent in the request body
-//         console.log("Received user data:", user);
-//         const newUser = await postUserTable(res, user); // Save the user to the database
-//         res.json(newUser); // Respond with the newly created user
-//     } 
-//     catch (error) {
-//         console.error("Error creating user:", error);
-//     }
-// });
+router.post("/api/users", async (req, res) => {
+    try {
+        const user = req.body; // Access the user data sent in the request body
+        console.log("Received user data:", user);
+        const newUser = await postUserTable(res, user); // Save the user to the database
+        res.json(newUser); // Respond with the newly created user
+    } 
+    catch (error) {
+        console.error("Error creating user:", error);
+    }
+});
 let app = express();
 app.use(express.json());
 app.use("/", router);
