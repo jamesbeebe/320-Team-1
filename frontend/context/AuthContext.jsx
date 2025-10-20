@@ -26,11 +26,11 @@ export function AuthProvider({ children }) {
   // Login function
   const login = async (email, password) => { 
     const data = await authService.login(email, password);
-    setUser(data);
+    setUser(data.user);
     router.push("/dashboard");
   };
 
-  // Signup function - switches between mock and real API
+  // Signup function
   const signup = async (username, email, password, major, gradYear) => {
         const data = await authService.signup(
           username,
@@ -39,13 +39,13 @@ export function AuthProvider({ children }) {
           major,
           gradYear
         );
-    setUser(data);
+    setUser(data.user);
     router.push("/onboarding");
   };
 
   // Logout function
   const logout = async () => {
-    await authService.logout();
+    authService.logout();
     setUser(null);
     router.push("/login");
   };
