@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { authService } from "@/services/auth";
+import { useAuth } from "@/context/AuthContext";
 import { chatService } from "@/services/chat";
 import Card from "@/components/ui/Card";
 
@@ -29,19 +29,22 @@ export default function ChatInterface() {
   const [channels] = useState(mockChannels);
   const [channelMessages, setChannelMessages] = useState({});
   const [selectedChannel, setSelectedChannel] = useState(channels[0]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [isConnected, setIsConnected] = useState(false);
   const ws = useRef(null);
   const messagesScrollBottomRef = useRef(null);
-  const { user } = authService.useAuth();
+  const { user } = useAuth();
 
   const formatMessage = (message) => {
-    const user = message.name;
+    const messageSenderName = message.name;
     const timestamp = new Date(message.timestamp).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
 
-    const [firstName, lastName] = user.split(" ");
+    const [firstName, lastName] = messageSenderName.split(" ");
     const sender = `${firstName} ${
       lastName ? lastName[0].toUpperCase() + "." : ""
     }`;
@@ -57,25 +60,38 @@ export default function ChatInterface() {
       content: message.content,
       sender,
       initials,
-      isOwn: message.user_id === user.id,
+      isOwn: user ? message.user_id === user.id : false,
     };
   };
 
   // Fetch messages for a specific channel
   const fetchMessages = async (channelId) => {
+    setIsLoading(true);
+    setError(null);
     try {
-      const messagesResponse = await chatService.fetchMessages(channelId);
+      const messagesResponse = await chatService.getMessages(channelId);
       const messagesMap = messagesResponse.map(formatMessage);
       setChannelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
     } catch (error) {
       console.error("Error loading messages:", error);
+      setError("Failed to load messages. Please try again.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
   useEffect(() => {
+    // Reset connection state and error when changing channels
+    setIsConnected(false);
+    setError(null);
+
     const handleMessage = (message) => {
       setChannelMessages((prev) => {
         const oldMessages = prev[selectedChannel.id] || [];
+        // Prevent duplicate messages by checking if message already exists
+        const isDuplicate = oldMessages.some((msg) => msg.id === message.id);
+        if (isDuplicate) return prev;
+
         return {
           ...prev,
           [selectedChannel.id]: [...oldMessages, formatMessage(message)],
@@ -85,19 +101,40 @@ export default function ChatInterface() {
 
     const handleError = (err) => {
       console.error("WebSocket error:", err);
+      setError(err.message || "Connection error occurred");
+      setIsConnected(false);
     };
 
-    const wsChannel = chatService.connectToChannel(
-      selectedChannel.id,
-      handleMessage,
-      handleError
-    );
-    ws.current = wsChannel;
+    const handleOpen = () => {
+      console.log("WebSocket connection established");
+      setIsConnected(true);
+      setError(null);
+    };
 
+    const handleClose = (event) => {
+      console.log("WebSocket connection closed", event);
+      setIsConnected(false);
+    };
+
+    const wsConnection = chatService.connectToChannel(selectedChannel.id, {
+      onMessage: handleMessage,
+      onError: handleError,
+      onOpen: handleOpen,
+      onClose: handleClose,
+      reconnect: true,
+      reconnectInterval: 3000,
+      maxReconnectAttempts: 5,
+    });
+
+    ws.current = wsConnection;
+
+    // Fetch initial messages
     fetchMessages(selectedChannel.id);
 
     return () => {
-      wsChannel.close();
+      if (ws.current) {
+        ws.current.close();
+      }
     };
   }, [selectedChannel]);
 
@@ -112,12 +149,24 @@ export default function ChatInterface() {
 
   // Handle sending a message
   const handleSendMessage = (e) => {
+    console.log("handleSendMessage called");
     e.preventDefault();
-    if (!messageInput.trim()) return;
+    if (!messageInput.trim() || !user) return;
 
-    chatService.sendMessageViaWebSocket(ws.current, user.id, messageInput);
+    if (!ws.current || !isConnected) {
+      setError("Not connected. Please wait...");
+      return;
+    }
 
-    setMessageInput("");
+    console.log("Sending message to WebSocket", user.id, messageInput.trim());
+    const success = ws.current.sendMessage(user.id, messageInput.trim());
+
+    if (success) {
+      setMessageInput("");
+      setError(null);
+    } else {
+      setError("Failed to send message. Please try again.");
+    }
   };
 
   return (
@@ -166,9 +215,28 @@ export default function ChatInterface() {
       <Card className="flex-1 p-6 flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-gray-200 pb-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">
-            {selectedChannel.name}
-          </h2>
+          <div className="flex items-center justify-between">
+            <h2 className="text-xl font-semibold text-gray-900">
+              {selectedChannel.name}
+            </h2>
+            {/* Connection Status Indicator */}
+            <div className="flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isConnected ? "bg-green-500" : "bg-gray-400"
+                }`}
+              />
+              <span className="text-sm text-gray-600">
+                {isConnected ? "Connected" : "Connecting..."}
+              </span>
+            </div>
+          </div>
+          {/* Error Banner */}
+          {error && (
+            <div className="mt-2 p-2 bg-red-50 border border-red-200 rounded text-sm text-red-700">
+              {error}
+            </div>
+          )}
         </div>
 
         {/* Messages */}
@@ -176,43 +244,55 @@ export default function ChatInterface() {
           ref={messagesScrollBottomRef}
           className="flex-1 overflow-y-auto space-y-4 mb-4"
         >
-          {messages.map((message) => (
-            <div
-              key={message.id}
-              className={`flex gap-3 ${
-                message.isOwn ? "flex-row-reverse" : ""
-              }`}
-            >
-              <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-semibold text-gray-700">
-                  {message.initials}
-                </span>
-              </div>
-              <div className={`flex-1 ${message.isOwn ? "text-right" : ""}`}>
-                <div
-                  className={`flex items-baseline gap-2 mb-1 ${
-                    message.isOwn ? "justify-end" : ""
-                  }`}
-                >
-                  <span className="font-semibold text-gray-900 text-sm">
-                    {message.sender}
-                  </span>
-                  <span className="text-xs text-gray-500">
-                    {message.timestamp}
-                  </span>
-                </div>
-                <div
-                  className={`inline-block px-4 py-2 rounded-lg ${
-                    message.isOwn
-                      ? "bg-[#EF5350] text-white"
-                      : "bg-gray-100 text-gray-900"
-                  }`}
-                >
-                  {message.content}
-                </div>
+          {isLoading && messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500">Loading messages...</div>
+            </div>
+          ) : messages.length === 0 ? (
+            <div className="flex items-center justify-center h-full">
+              <div className="text-gray-500">
+                No messages yet. Start the conversation!
               </div>
             </div>
-          ))}
+          ) : (
+            messages.map((message) => (
+              <div
+                key={message.id}
+                className={`flex gap-3 ${
+                  message.isOwn ? "flex-row-reverse" : ""
+                }`}
+              >
+                <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
+                  <span className="text-sm font-semibold text-gray-700">
+                    {message.initials}
+                  </span>
+                </div>
+                <div className={`flex-1 ${message.isOwn ? "text-right" : ""}`}>
+                  <div
+                    className={`flex items-baseline gap-2 mb-1 ${
+                      message.isOwn ? "justify-end" : ""
+                    }`}
+                  >
+                    <span className="font-semibold text-gray-900 text-sm">
+                      {message.sender}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {message.timestamp}
+                    </span>
+                  </div>
+                  <div
+                    className={`inline-block px-4 py-2 rounded-lg ${
+                      message.isOwn
+                        ? "bg-[#EF5350] text-white"
+                        : "bg-gray-100 text-gray-900"
+                    }`}
+                  >
+                    {message.content}
+                  </div>
+                </div>
+              </div>
+            ))
+          )}
         </div>
 
         {/* Message Input */}
@@ -226,7 +306,8 @@ export default function ChatInterface() {
           />
           <button
             type="submit"
-            className="bg-[#EF5350] hover:bg-[#E53935] text-white p-3 rounded-lg transition-colors"
+            disabled={!isConnected || !messageInput.trim()}
+            className="bg-[#EF5350] hover:bg-[#E53935] text-white p-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
               className="w-6 h-6"
