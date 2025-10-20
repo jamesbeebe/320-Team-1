@@ -99,7 +99,6 @@ export class ChatManager {
       // Broadcast to everyone in the same chat after we have saved to the database
       for (const client of room) {
         if (client.readyState === ws.OPEN) {
-          console.log("Sent to", d.name);
           client.send(JSON.stringify(d));
         }
       }

@@ -3,29 +3,23 @@ import dotenv from "dotenv";
 import { supabase } from "../supabase-client.js";
 dotenv.config();
 
-export async function getUserTable(){
+export async function getUser(){
     const {data, error} = await supabase.from("users").select("*");
     if(error){
         throw new Error(error.message);
     }
     return data;
 }
-export async function getSpecificUserTable(userId){
+export async function getSpecificUser(userId){
     const {data, error} = await supabase.from("users").select("*").eq("id", userId).single();
     if(error){
         throw new Error(error.message);
     }
     return data;
 }
-export async function postUserTable(user){
-    const {data, error} = await supabase.from("users").insert(user).select();
-    if(error){
-        throw new Error(error.message);
-    }
-    return data[0];
-}
 
-export async function deleteUserTable(userId){
+
+export async function deleteUser(userId){
     const {data, error} = await supabase.from('users').delete().eq('id', userId).select();
     if(error){
         throw new Error(error.message);
