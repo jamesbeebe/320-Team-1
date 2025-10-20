@@ -11,11 +11,19 @@ const mockChannels = [
     name: "CS 311 General",
     type: "general",
   },
-  { id: "aa36e595-aae4-4a3f-b26e-952549a4d65d", name: "Midterm 1 Review", type: "general" },
-  { id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b", name: "Dynamic Programming", type: "study-group" },
+  {
+    id: "aa36e595-aae4-4a3f-b26e-952549a4d65d",
+    name: "Midterm 1 Review",
+    type: "general",
+  },
+  {
+    id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b",
+    name: "Dynamic Programming",
+    type: "study-group",
+  },
 ];
 
-const userId = "57f98ba6-02ac-461b-9a5d-a3a4757a8c64";
+const userId = "d6154bad-467c-4e71-8def-206c8923cf6f";
 
 export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
@@ -23,6 +31,7 @@ export default function ChatInterface() {
   const [channelMessages, setChannelMessages] = useState({});
   const [selectedChannel, setSelectedChannel] = useState(channels[0]);
   const ws = useRef(null);
+  const messagesScrollBottomRef = useRef(null);
 
   const formatMessage = (message) => {
     const user = message.name;
@@ -33,8 +42,12 @@ export default function ChatInterface() {
     });
 
     const [firstName, lastName] = user.split(" ");
-    const sender = `${firstName} ${lastName ? lastName[0].toUpperCase() + "." : ""}`;
-    const initials = `${firstName[0].toUpperCase()}${lastName ? lastName[0].toUpperCase() : ""}`;
+    const sender = `${firstName} ${
+      lastName ? lastName[0].toUpperCase() + "." : ""
+    }`;
+    const initials = `${firstName[0].toUpperCase()}${
+      lastName ? lastName[0].toUpperCase() : ""
+    }`;
 
     return {
       id: message.id,
@@ -51,7 +64,9 @@ export default function ChatInterface() {
   // Fetch messages for a specific channel
   const fetchMessages = async (channelId) => {
     try {
-      const response = await axios.get(`http://localhost:3001/api/messages/${channelId}`);
+      const response = await axios.get(
+        `http://localhost:3001/api/messages/${channelId}`
+      );
       const messagesResponse = response.data;
       const messagesMap = messagesResponse.map(formatMessage);
       setChannelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
@@ -61,7 +76,9 @@ export default function ChatInterface() {
   };
 
   useEffect(() => {
-    const wsChannel = new WebSocket(`ws://localhost:3001/${selectedChannel.id}`);
+    const wsChannel = new WebSocket(
+      `ws://localhost:3001/${selectedChannel.id}`
+    );
     ws.current = wsChannel;
 
     wsChannel.onopen = () => console.log("Connected to", selectedChannel.id);
@@ -89,6 +106,15 @@ export default function ChatInterface() {
     };
   }, [selectedChannel]);
 
+  const messages = channelMessages[selectedChannel.id] || [];
+
+  useEffect(() => {
+    if (messagesScrollBottomRef.current) {
+      messagesScrollBottomRef.current.scrollTop =
+        messagesScrollBottomRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   // Handle sending a message
   const handleSendMessage = (e) => {
     e.preventDefault();
@@ -104,8 +130,6 @@ export default function ChatInterface() {
 
     setMessageInput("");
   };
-
-  const messages = channelMessages[selectedChannel.id] || [];
 
   return (
     <div className="flex gap-4 h-[600px]">
@@ -153,18 +177,27 @@ export default function ChatInterface() {
       <Card className="flex-1 p-6 flex flex-col">
         {/* Chat Header */}
         <div className="border-b border-gray-200 pb-4 mb-4">
-          <h2 className="text-xl font-semibold text-gray-900">{selectedChannel.name}</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            {selectedChannel.name}
+          </h2>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto space-y-4 mb-4">
+        <div
+          ref={messagesScrollBottomRef}
+          className="flex-1 overflow-y-auto space-y-4 mb-4"
+        >
           {messages.map((message) => (
             <div
               key={message.id}
-              className={`flex gap-3 ${message.isOwn ? "flex-row-reverse" : ""}`}
+              className={`flex gap-3 ${
+                message.isOwn ? "flex-row-reverse" : ""
+              }`}
             >
               <div className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center flex-shrink-0">
-                <span className="text-sm font-semibold text-gray-700">{message.initials}</span>
+                <span className="text-sm font-semibold text-gray-700">
+                  {message.initials}
+                </span>
               </div>
               <div className={`flex-1 ${message.isOwn ? "text-right" : ""}`}>
                 <div
@@ -172,8 +205,12 @@ export default function ChatInterface() {
                     message.isOwn ? "justify-end" : ""
                   }`}
                 >
-                  <span className="font-semibold text-gray-900 text-sm">{message.sender}</span>
-                  <span className="text-xs text-gray-500">{message.timestamp}</span>
+                  <span className="font-semibold text-gray-900 text-sm">
+                    {message.sender}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    {message.timestamp}
+                  </span>
                 </div>
                 <div
                   className={`inline-block px-4 py-2 rounded-lg ${
