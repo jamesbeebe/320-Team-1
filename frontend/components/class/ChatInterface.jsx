@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { authService } from "@/services/auth";
+import { chatService } from "@/services/chat";
 import Card from "@/components/ui/Card";
-import axios from "axios";
 
 // Mock channels
 const mockChannels = [
@@ -64,10 +64,7 @@ export default function ChatInterface() {
   // Fetch messages for a specific channel
   const fetchMessages = async (channelId) => {
     try {
-      const response = await axios.get(
-        `http://localhost:3001/api/messages/${channelId}`
-      );
-      const messagesResponse = response.data;
+      const messagesResponse = await chatService.fetchMessages(channelId);
       const messagesMap = messagesResponse.map(formatMessage);
       setChannelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
     } catch (error) {
@@ -76,17 +73,7 @@ export default function ChatInterface() {
   };
 
   useEffect(() => {
-    const wsChannel = new WebSocket(
-      `ws://localhost:3001/${selectedChannel.id}`
-    );
-    ws.current = wsChannel;
-
-    wsChannel.onopen = () => console.log("Connected to", selectedChannel.id);
-
-    wsChannel.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      const message = data.d || data;
-
+    const handleMessage = (message) => {
       setChannelMessages((prev) => {
         const oldMessages = prev[selectedChannel.id] || [];
         return {
@@ -96,12 +83,20 @@ export default function ChatInterface() {
       });
     };
 
-    wsChannel.onerror = (err) => console.error("WebSocket error:", err);
+    const handleError = (err) => {
+      console.error("WebSocket error:", err);
+    };
+
+    const wsChannel = chatService.connectToChannel(
+      selectedChannel.id,
+      handleMessage,
+      handleError
+    );
+    ws.current = wsChannel;
 
     fetchMessages(selectedChannel.id);
 
     return () => {
-      console.log("Disconnecting from", selectedChannel.id);
       wsChannel.close();
     };
   }, [selectedChannel]);
@@ -120,13 +115,7 @@ export default function ChatInterface() {
     e.preventDefault();
     if (!messageInput.trim()) return;
 
-    ws.current.send(
-      JSON.stringify({
-        user_id: user.id,
-        timestamp: new Date().toISOString(),
-        content: messageInput,
-      })
-    );
+    chatService.sendMessageViaWebSocket(ws.current, user.id, messageInput);
 
     setMessageInput("");
   };
