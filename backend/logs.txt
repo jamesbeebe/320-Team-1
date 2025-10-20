@@ -1,0 +1,130 @@
+[2025-10-20T00:36:01.629Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:07.323Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:08.044Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:08.047Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:11.351Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:13.027Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:13.027Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:14.078Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:14.139Z] [error] Handle Connection Error: Invalid chat ID 2: invalid input syntax for type uuid: "2"
+[2025-10-20T00:36:14.148Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:36:16.010Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:36:16.031Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:36:22.022Z] [error] Error saving message to database: insert or update on table "messages" violates foreign key constraint "messages_user_id_fkey"
+[2025-10-20T00:36:22.023Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:38:47.460Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:38:47.470Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:38:50.897Z] [error] Error saving message to database: insert or update on table "messages" violates foreign key constraint "messages_user_id_fkey"
+[2025-10-20T00:38:50.898Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:09.051Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:09.081Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:12.708Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:12.775Z] [error] Handle Connection Error: Invalid chat ID 2: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:12.798Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:13.276Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:13.307Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:43.253Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:41:43.391Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:43.406Z] [error] Handle Connection Error: Invalid chat ID 2: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:44.572Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:41:44.582Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:45:43.787Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:45:44.121Z] [error] Handle Connection Error: Invalid chat ID 2: invalid input syntax for type uuid: "2"
+[2025-10-20T00:45:44.126Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:45:52.461Z] [error] Error getting messages: invalid input syntax for type uuid: "3"
+[2025-10-20T00:45:52.462Z] [error] Handle Connection Error: Invalid chat ID 3: invalid input syntax for type uuid: "3"
+[2025-10-20T00:45:55.328Z] [error] Error getting messages: invalid input syntax for type uuid: "3"
+[2025-10-20T00:45:55.391Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:50:07.259Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:50:07.459Z] [error] Handle Connection Error: Invalid chat ID 2: invalid input syntax for type uuid: "2"
+[2025-10-20T00:50:07.491Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:50:07.960Z] [error] Error getting messages: invalid input syntax for type uuid: "2"
+[2025-10-20T00:50:07.977Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:58:55.375Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:58:55.404Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:59:18.844Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:59:22.021Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T00:59:22.032Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:35.729Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:36.286Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:36.323Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:46.918Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:46.921Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:00:46.957Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:01:09.108Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:01:09.155Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:01:09.265Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:02:54.594Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:02:54.601Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:02:54.639Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:03:51.503Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:03:51.544Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:03:55.499Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:05:08.766Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:05:08.767Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:05:08.797Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:06:59.022Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:06:59.041Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:07:03.074Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:08:32.857Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:08:32.858Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:08:44.920Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:26:01.605Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:26:01.606Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:26:05.212Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:27:58.513Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:27:58.515Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:33.157Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:33.940Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:33.966Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:35.522Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:36.113Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:36.141Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:30:38.892Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:31:01.938Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:31:04.809Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:33:35.298Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:33:35.399Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:33:38.731Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:39:18.369Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:39:18.385Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:39:20.550Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:41:32.364Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:41:32.364Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:41:34.784Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:42:43.634Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:42:43.635Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:42:45.718Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:43:39.760Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:43:39.814Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:43:41.394Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:43:41.395Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:13.088Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:13.090Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:27.498Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:27.957Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:27.978Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:30.816Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:44:30.817Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:34.513Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:34.558Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:39.752Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:44:39.753Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:43.378Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:43.404Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:44:59.544Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:45:00.895Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:45:04.183Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:45:04.184Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:45:08.715Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:45:08.718Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:49:55.505Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:49:55.507Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:51:10.399Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:51:10.414Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:51:13.813Z] [error] Chat Manager handling message error : Cannot read properties of undefined (reading 'name')
+[2025-10-20T01:51:13.814Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:52:34.839Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:52:34.843Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:54:11.444Z] [info] Client left chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+[2025-10-20T01:54:13.110Z] [info] Client connected to chat 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0

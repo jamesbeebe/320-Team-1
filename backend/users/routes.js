@@ -1,8 +1,8 @@
 // this contains all the user routes
 import express from "express";
-import { getUserTable, postUserTable, deleteUserTable} from "./services.js";
-const router = express.Router();
-router.get("/api/users", async (req, res) => {
+import { getUserTable, postUserTable, deleteUserTable, getSpecificUserTable} from "./services.js";
+export const userRouter = express.Router();
+userRouter.get("/", async (req, res) => {
     try {
         const users = await getUserTable();
 
@@ -18,7 +18,24 @@ router.get("/api/users", async (req, res) => {
     }
 });
 
-router.post("/api/users", async (req, res) => {
+userRouter.get("/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await getSpecificUserTable(userId);
+
+        if(!user){
+            return res.status(404).json({error: "No user found"});
+        }
+
+        return res.status(200).json(user);
+    } 
+    catch (error) {
+        console.error("Error fetching user:", error);
+        return res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+userRouter.post("/", async (req, res) => {
     try {
         const user = req.body; // Access the user data sent in the request body
         const newUser = await postUserTable(user); // Save the user to the database
@@ -35,7 +52,7 @@ router.post("/api/users", async (req, res) => {
     }
 });
 
-router.delete("/api/users/:userId", async (req, res) => {
+userRouter.delete("/:userId", async (req, res) => {
     try{
         const userId = req.params['userId'];
         const deletedUser = await deleteUserTable(userId);

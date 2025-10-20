@@ -1,13 +1,17 @@
 // this contains all the logic that encapsulates user operations
-import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { supabase } from "../supabase-client.js";
 dotenv.config();
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
+
 export async function getUserTable(){
     const {data, error} = await supabase.from("users").select("*");
+    if(error){
+        throw new Error(error.message);
+    }
+    return data;
+}
+export async function getSpecificUserTable(userId){
+    const {data, error} = await supabase.from("users").select("*").eq("id", userId).single();
     if(error){
         throw new Error(error.message);
     }

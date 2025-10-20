@@ -1,9 +1,11 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
 import { authRouter } from "./auth/routes.js";
+import { userRouter } from "./users/routes.js";
 
 export const app = express();
 export const httpServer = http.createServer(app);
@@ -11,10 +13,12 @@ export const websocketServer = new WebSocketServer({
   server: httpServer,
 });
 
-const PORT = 3000;
+const PORT = 3001;
 
 // Middleware to parse JSON request bodies
 app.use(express.json());
+
+app.use(cors({ origin: "http://localhost:3000" }));
 
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
@@ -32,3 +36,4 @@ app.get("/test", (req, res) => {
 app.use("/api/auth", authRouter);
 // set up messages route
 app.use("/api/messages", messageRouter);
+app.use("/api/users", userRouter)
