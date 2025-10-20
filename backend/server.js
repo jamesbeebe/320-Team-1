@@ -1,5 +1,6 @@
 import express from "express";
 import http from "http";
+import cors from "cors";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
@@ -11,7 +12,17 @@ export const websocketServer = new WebSocketServer({
   server: httpServer,
 });
 
-const PORT = 3000;
+const PORT = 8080;
+
+// CORS configuration to allow frontend requests
+app.use(
+  cors({
+    origin: ["http://localhost:3000", "http://localhost:3001"],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 
 // Middleware to parse JSON request bodies
 app.use(express.json());

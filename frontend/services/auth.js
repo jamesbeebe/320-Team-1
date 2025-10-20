@@ -1,12 +1,12 @@
-import api from './api';
+import api from "./api";
 
 export const authService = {
   // Login
   async login(email, password) {
     try {
-      const data = await api.post('/auth/login', { email, password });
-      if (data.token) {
-        api.setToken(data.token);
+      const data = await api.post("/auth/login", { email, password });
+      if (data.accessToken) {
+        api.setToken(data.accessToken);
       }
       return data;
     } catch (error) {
@@ -15,11 +15,17 @@ export const authService = {
   },
 
   // Register
-  async signup(username, email, password) {
+  async signup(username, email, password, major, gradYear) {
     try {
-      const data = await api.post('/auth/register', { username, email, password });
-      if (data.token) {
-        api.setToken(data.token);
+      const data = await api.post("/auth/signup", {
+        name: username,
+        email,
+        password,
+        major,
+        gradYear: gradYear,
+      });
+      if (data.accessToken) {
+        api.setToken(data.accessToken);
       }
       return data;
     } catch (error) {
@@ -32,18 +38,8 @@ export const authService = {
     api.removeToken();
   },
 
-  // Get current user
-  async getCurrentUser() {
-    try {
-      return await api.get('/auth/me');
-    } catch (error) {
-      throw error;
-    }
-  },
-
   // Check if user is authenticated
   isAuthenticated() {
     return !!api.getToken();
   },
 };
-

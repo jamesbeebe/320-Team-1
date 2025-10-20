@@ -13,6 +13,8 @@ export default function SignupPage() {
     username: '',
     email: '',
     password: '',
+    major: '',
+    gradYear: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -23,7 +25,13 @@ export default function SignupPage() {
     setLoading(true);
 
     try {
-      await signup(formData.username, formData.email, formData.password);
+      await signup(
+        formData.username,
+        formData.email,
+        formData.password,
+        formData.major,
+        formData.gradYear
+      );
       // Navigation handled by AuthContext
     } catch (err) {
       setError(err.message || 'Failed to create account. Please try again.');
@@ -81,14 +89,35 @@ export default function SignupPage() {
             required
           />
 
+          <Input
+            label="Major"
+            type="text"
+            name="major"
+            value={formData.major}
+            onChange={handleChange}
+            required
+          />
+
+          <Input
+            label="Graduation Year"
+            type="number"
+            name="gradYear"
+            value={formData.gradYear}
+            onChange={handleChange}
+            required
+          />
+
           <Button type="submit" className="w-full" disabled={loading}>
             {loading ? 'Creating Account...' : 'Create Account'}
           </Button>
         </form>
 
         <p className="text-center mt-6 text-gray-600">
-          Already have an account?{' '}
-          <Link href="/login" className="text-[#EF5350] hover:text-[#E53935] font-medium">
+          Already have an account?
+          <Link
+            href="/login"
+            className="text-[#EF5350] hover:text-[#E53935] font-medium"
+          >
             Log In
           </Link>
         </p>
@@ -96,4 +125,3 @@ export default function SignupPage() {
     </div>
   );
 }
-
