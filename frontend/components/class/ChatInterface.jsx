@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { authService } from "@/services/auth";
 import Card from "@/components/ui/Card";
 import axios from "axios";
 
@@ -23,8 +24,6 @@ const mockChannels = [
   },
 ];
 
-const userId = "d6154bad-467c-4e71-8def-206c8923cf6f";
-
 export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
   const [channels] = useState(mockChannels);
@@ -32,6 +31,7 @@ export default function ChatInterface() {
   const [selectedChannel, setSelectedChannel] = useState(channels[0]);
   const ws = useRef(null);
   const messagesScrollBottomRef = useRef(null);
+  const { user } = authService.useAuth();
 
   const formatMessage = (message) => {
     const user = message.name;
@@ -57,7 +57,7 @@ export default function ChatInterface() {
       content: message.content,
       sender,
       initials,
-      isOwn: message.user_id === userId,
+      isOwn: message.user_id === user.id,
     };
   };
 
@@ -122,7 +122,7 @@ export default function ChatInterface() {
 
     ws.current.send(
       JSON.stringify({
-        user_id: userId,
+        user_id: user.id,
         timestamp: new Date().toISOString(),
         content: messageInput,
       })
