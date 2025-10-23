@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export const chatService = {
   // Get channels for a class
@@ -11,19 +11,20 @@ export const chatService = {
   },
 
   // Get messages for a channel
-  async getMessages(channelId, limit = 50, offset = 0) {
+  async getMessages(channelId, startDate = null, endDate = null) {
     try {
-      return await api.get(`/chat/channels/${channelId}/messages?limit=${limit}&offset=${offset}`);
-    } catch (error) {
-      throw error;
-    }
-  },
+      let url = `/messages/${channelId}`;
+      const params = new URLSearchParams();
 
-  // Send a message
-  async sendMessage(channelId, message) {
-    try {
-      return await api.post(`/chat/channels/${channelId}/messages`, { message });
+      if (startDate) params.append("startDate", startDate);
+      if (endDate) params.append("endDate", endDate);
+
+      const queryString = params.toString();
+      if (queryString) url += `?${queryString}`;
+
+      return await api.get(url);
     } catch (error) {
+      console.error("Error loading messages:", error);
       throw error;
     }
   },
@@ -37,36 +38,142 @@ export const chatService = {
     }
   },
 
-  // WebSocket connection for real-time chat
-  connectWebSocket(onMessage) {
-    const WS_URL = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:3001';
-    const token = api.getToken();
-    
-    if (!token) {
-      console.error('No auth token found for WebSocket connection');
-      return null;
-    }
+  // Connect to a specific channel using WebSocket with auto-reconnection
+  connectToChannel(channelId, callbacks = {}) {
+    const {
+      onMessage,
+      onError,
+      onOpen,
+      onClose,
+      reconnect = true,
+      reconnectInterval = 3000,
+      maxReconnectAttempts = 5,
+    } = callbacks;
 
-    const ws = new WebSocket(`${WS_URL}?token=${token}`);
+    let ws = null;
+    let reconnectAttempts = 0;
+    let reconnectTimer = null;
+    let intentionallyClosed = false;
 
-    ws.onopen = () => {
-      console.log('WebSocket connected');
+    const connect = () => {
+      const WS_BASE_URL =
+        process.env.NEXT_PUBLIC_WS_URL || "ws://localhost:8080";
+
+      // Normalize WebSocket URL
+      const wsUrl =
+        WS_BASE_URL.startsWith("ws://") || WS_BASE_URL.startsWith("wss://")
+          ? WS_BASE_URL
+          : `ws://${WS_BASE_URL.replace(/^https?:\/\//, "")}`;
+
+      ws = new WebSocket(`${wsUrl}/${channelId}`);
+
+      ws.onopen = () => {
+        console.log(`Connected to channel ${channelId}`);
+        reconnectAttempts = 0; // Reset reconnect attempts on successful connection
+        if (onOpen) onOpen();
+      };
+
+      ws.onmessage = (event) => {
+        try {
+          const data = JSON.parse(event.data);
+          if (onMessage) onMessage(data);
+        } catch (error) {
+          console.error("Error parsing WebSocket message:", error);
+          if (onError) onError(error);
+        }
+      };
+
+      ws.onerror = (error) => {
+        console.error(`WebSocket error for channel ${channelId}:`, error);
+        if (onError) onError(error);
+      };
+
+      ws.onclose = (event) => {
+        console.log(
+          `Disconnected from channel ${channelId}`,
+          event.code,
+          event.reason
+        );
+        if (onClose) onClose(event);
+
+        // Attempt to reconnect if not intentionally closed
+        if (
+          !intentionallyClosed &&
+          reconnect &&
+          reconnectAttempts < maxReconnectAttempts
+        ) {
+          reconnectAttempts++;
+          console.log(
+            `Attempting to reconnect (${reconnectAttempts}/${maxReconnectAttempts})...`
+          );
+          reconnectTimer = setTimeout(() => {
+            connect();
+          }, reconnectInterval);
+        } else if (reconnectAttempts >= maxReconnectAttempts) {
+          console.error("Max reconnection attempts reached");
+          if (onError) {
+            onError(new Error("Failed to reconnect after maximum attempts"));
+          }
+        }
+      };
+
+      return ws;
     };
 
-    ws.onmessage = (event) => {
-      const data = JSON.parse(event.data);
-      onMessage(data);
-    };
+    // Initial connection
+    ws = connect();
 
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
+    // Return WebSocket wrapper with utility methods
+    return {
+      get socket() {
+        return ws;
+      },
 
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-    };
+      get readyState() {
+        return ws ? ws.readyState : WebSocket.CLOSED;
+      },
 
-    return ws;
+      // Send a message through the WebSocket
+      sendMessage(userId, content) {
+        if (ws && ws.readyState === WebSocket.OPEN) {
+          ws.send(
+            JSON.stringify({
+              user_id: userId,
+              timestamp: new Date().toISOString(),
+              content: content,
+            })
+          );
+          return true;
+        } else {
+          console.error("WebSocket is not open. Cannot send message.");
+          if (onError) {
+            onError(new Error("WebSocket connection is not open"));
+          }
+          return false;
+        }
+      },
+
+      // Close the WebSocket connection
+      close() {
+        intentionallyClosed = true;
+        if (reconnectTimer) {
+          clearTimeout(reconnectTimer);
+          reconnectTimer = null;
+        }
+        if (ws) {
+          ws.close();
+        }
+      },
+
+      // Manually trigger reconnection
+      reconnect() {
+        if (ws) {
+          ws.close();
+        }
+        intentionallyClosed = false;
+        reconnectAttempts = 0;
+        connect();
+      },
+    };
   },
 };
-

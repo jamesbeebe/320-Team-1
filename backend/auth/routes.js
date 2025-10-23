@@ -1,6 +1,7 @@
 import router from "express";
 import { log } from "../logs/logger.js";
 import { supabase } from "../supabase-client.js";
+import authenticate from "../utils/auth.js";
 
 export const authRouter = router();
 
