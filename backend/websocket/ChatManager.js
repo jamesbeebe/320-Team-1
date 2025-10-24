@@ -1,5 +1,6 @@
 import { supabase } from "../supabase-client.js";
 import { log } from "../logs/logger.js";
+import { postMessageAndReturn } from "../messages/controller.js";
 export class ChatManager {
   static instance = null;
 
@@ -44,12 +45,18 @@ export class ChatManager {
 
       if (error) {
         // this will throw an error if there is no rows as single expects at least one row
-        log("error", `Handle Connection Error: Invalid chat ID ${chatId}: ${error.message}`);
+        log(
+          "error",
+          `Handle Connection Error: Invalid chat ID ${chatId}: ${error.message}`
+        );
         ws.close(1008, "chat id not found");
         return;
       }
     } catch (err) {
-      log("error", `Handle Connection Error: Error validating chat ID ${chatId}: ${err.message}`);
+      log(
+        "error",
+        `Handle Connection Error: Error validating chat ID ${chatId}: ${err.message}`
+      );
       ws.close(1011, "Internal server error");
       return;
     }
@@ -76,12 +83,12 @@ export class ChatManager {
   async handleMessage(ws, room, chatId, data) {
     try {
       const message = JSON.parse(data);
-      const { d, error } = await supabase.from("messages").insert({
-        chat_id: chatId,
-        user_id: message.user_id,
-        timestamp: message.timestamp,
-        content: message.content,
-      });
+      const { d, error } = await postMessageAndReturn(
+        chatId,
+        message.user_id,
+        message.content,
+        message.timestamp
+      );
 
       if (error) {
         log("error", `Error saving message to database: ${error.message}`);
@@ -92,7 +99,7 @@ export class ChatManager {
       // Broadcast to everyone in the same chat after we have saved to the database
       for (const client of room) {
         if (client.readyState === ws.OPEN) {
-          client.send(JSON.stringify({ chatId, ...message }));
+          client.send(JSON.stringify(d));
         }
       }
     } catch (err) {

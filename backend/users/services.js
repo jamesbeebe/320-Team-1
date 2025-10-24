@@ -1,34 +1,28 @@
 // this contains all the logic that encapsulates user operations
-import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
+import { supabase } from "../supabase-client.js";
 dotenv.config();
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_ROLE_KEY
-);
-console.log('Supabase URL:', process.env.supabase_url);
-console.log('Supabase Key:', process.env.supabase_service_role_key ? 'Loaded ✅' : '❌ Missing key');
 
-export async function getUserTable(res){
-    const result = await supabase.from("user_table").select("*");
-    console.log(result);
-    if(result.error || !result.data){
-        res.status(500).send("Error retrieving user data.");
+export async function getUser(){
+    const {data, error} = await supabase.from("users").select("*");
+    if(error){
+        throw new Error(error.message);
     }
-    else{
-        let userData = result.data;
-        return userData;
-        // res.status(200).send("Successfully retrieved user data.");
-    }
+    return data;
 }
-export async function postUserTable(res, user){
-    const result = await supabase.from("user_table").insert(user).select();
-    if(result.error || !result.data){
-        res.status(500).send("Error posting user data.");
+export async function getSpecificUser(userId){
+    const {data, error} = await supabase.from("users").select("*").eq("id", userId).single();
+    if(error){
+        throw new Error(error.message);
     }
-    else{
-        let postedData = result.data;
-        return postedData;
-        // res.status(200).send("Successfully posted user data.");
-    }
+    return data;
 }
+
+export async function deleteUser(userId){
+    const {data, error} = await supabase.from('users').delete().eq('id', userId).select();
+    if(error){
+        throw new Error(error.message);
+    }
+    return data[0];
+}
+

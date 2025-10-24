@@ -1,6 +1,7 @@
 import router from "express";
 import { log } from "../logs/logger.js";
 import { supabase } from "../supabase-client.js";
+import authenticate from "../utils/auth.js";
 
 export const authRouter = router();
 
@@ -25,7 +26,7 @@ authRouter.post("/signup", async (req, res) => {
 
   return res
     .status(200)
-    .json({ message: "User created successfully"});
+    .json({ message: "User created successfully", accessToken: data.session.access_token });
 });
 
 authRouter.post("/login", async (req, res) => {
@@ -39,7 +40,7 @@ authRouter.post("/login", async (req, res) => {
     log("error", `error signing in: ${error.message}`);
     return res.status(500).json({ error: "Failed to sign in" });
   }
-  return res.status(200).json({ accessToken: data.session.access_token });
+  return res.status(200).json({ accessToken: data.session.access_token,  user: data.user});
 });
 
 authRouter.post("/logout", async (req, res) => {
