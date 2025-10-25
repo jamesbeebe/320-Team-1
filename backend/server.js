@@ -28,8 +28,6 @@ app.use(
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:3000" }));
-
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
 chatManager.setupWebSocket(websocketServer);
