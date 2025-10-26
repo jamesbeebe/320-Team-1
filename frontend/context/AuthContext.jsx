@@ -13,18 +13,19 @@ export function AuthProvider({ children }) {
 
   // Check if user is authenticated on mount
   useEffect(() => {
-    const initAuth = async () => {
-      if (authService.isAuthenticated()) {
-        const data = await authService.getCurrentUser();
-        setUser(data);
+    authService.isAuthenticated().then((user) => {
+      if (user) {
+        setUser(user);
+        router.push("/dashboard");
+      } else {
+        router.push("/login"); 
       }
-    };
-    initAuth();
-    setLoading(false);
+      setLoading(false);
+    });
   }, []);
 
   // Login function
-  const login = async (email, password) => { 
+  const login = async (email, password) => {
     const data = await authService.login(email, password);
     setUser(data.user);
     router.push("/dashboard");
@@ -32,13 +33,13 @@ export function AuthProvider({ children }) {
 
   // Signup function
   const signup = async (username, email, password, major, gradYear) => {
-        const data = await authService.signup(
-          username,
-          email,
-          password,
-          major,
-          gradYear
-        );
+    const data = await authService.signup(
+      username,
+      email,
+      password,
+      major,
+      gradYear
+    );
     setUser(data.user);
     router.push("/onboarding");
   };

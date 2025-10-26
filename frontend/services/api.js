@@ -15,6 +15,7 @@ class ApiService {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      credentials: "include", // Include cookies in the request
       ...options,
     };
 
