@@ -1,11 +1,10 @@
-import router from "express";
-import { getChat } from "./controller.js";
+import router from "express";   
 import { log } from "../logs/logger.js";
-import authenticate from "../utils/auth.js";
+import { getAllChatsForClass, createChatForClass } from "./controller.js";
 
 export const chatRouter = router();
 
-chatRouter.use(authenticate);
+// chatRouter.use(authenticate);
 
 chatRouter.get("/class/:classId/", async (req, res) => {
   const { classId } = req.params;
@@ -20,6 +19,7 @@ chatRouter.get("/class/:classId/", async (req, res) => {
 chatRouter.post("/class/:classId/", async (req, res) => {
   const { classId } = req.params;
   const { name , expiresAt} = req.body;
+  log("info", `Creating chat for class ${classId} with name ${name} and expiresAt ${expiresAt}`);
   const { data, error } = await createChatForClass(classId, name, expiresAt);
   if (error) {
     log("error", `Error creating chat: ${error.message}`);
