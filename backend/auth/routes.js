@@ -83,6 +83,7 @@ authRouter.post("/logout", async (req, res) => {
 
 authRouter.post("/refresh-auth-token", async (req, res) => {
   // this endpoint maintains the rolling window of seven days for the auth token enabling refreshes
+  log("info", `refreshing auth token: ${JSON.stringify(req.cookies)}`);
   const { auth_token } = req.cookies;
   const { data, error } = await supabase.auth.refreshSession({
     access_token: auth_token,
