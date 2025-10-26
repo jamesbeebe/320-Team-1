@@ -21,3 +21,17 @@ export async function createChatForClass(classId, name, expiresAt) {
     .single();
   return { data, error };
 }
+
+export async function updateChatForClass(chatId, name, expiresAt) {
+  const { data, error } = await supabase
+    .from("chats")
+    .update({ name: name, expires_at: expiresAt })
+    .eq("id", chatId)
+    .select(`
+        id,
+        name,
+        expires_at
+        `)
+    .single();
+  return { data, error };
+}
