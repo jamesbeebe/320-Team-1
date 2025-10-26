@@ -9,7 +9,10 @@ create table public.users (
 CREATE TABLE chats (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name VARCHAR(255),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    class_id INT4,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    expires_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    FOREIGN KEY (class_id) REFERENCES classes(id)
 );
 
 CREATE TABLE messages (
