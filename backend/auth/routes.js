@@ -94,9 +94,8 @@ authRouter.post("/logout", async (req, res) => {
 });
 
 authRouter.get("/refresh", async (req, res) => {
-  log("info", `refreshing tokens`);
   const { refresh_token } = req.cookies;
-
+  log("info", `refreshing tokens for ${refresh_token}`);
   if (!refresh_token) {
     return res.status(401).json({ error: "No refresh token" });
   }
@@ -128,28 +127,5 @@ authRouter.get("/refresh", async (req, res) => {
   } catch (error) {
     log("error", `Unexpected error: ${error.message}`);
     return res.status(500).json({ error: "Failed to refresh token" });
-  }
-});
-
-authRouter.get("/me", async (req, res) => {
-  const { refresh_token } = req.cookies;
-
-  if (!refresh_token) {
-    return res.status(401).json({ error: "Not authenticated" });
-  }
-
-  try {
-    // Validate refresh token by getting user
-    const { data, error } = await supabase.auth.refreshSession(refresh_token);
-
-    if (error || !data.session) {
-      return res.status(401).json({ error: "Invalid token" });
-    }
-
-    // Return user info
-    return res.status(200).json({ user: data.user });
-  } catch (error) {
-    log("error", `Unexpected error validating token: ${error.message}`);
-    return res.status(500).json({ error: "Failed to validate token" });
   }
 });
