@@ -12,10 +12,8 @@ export function StudyGroupsForm (){
   const [formData, setFormData] = useState({
     studyGroupName: '',
     date: '',
-    startTime: '',
     endTime: '',
     location: '',
-    capacity: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -29,6 +27,19 @@ export function StudyGroupsForm (){
       //Could add validation for date to be this semester
 
       //Could make the time inputs validate when selecting times.
+
+      if(!formData.studyGroupName || formData.studyGroupName.trim() == ''){
+        throw new Error("Study group name can't be empty.");
+      }
+
+      if(!formData.date){
+        throw new Error("Date can't be empty.");
+      }
+
+      if(!formData.endTime){
+        throw new Error("End time can't be empty.");
+      }
+
       if(formData.endTime < formData.startTime){
         throw new Error("Invalid time: End Time is before Start Time.")
       }
@@ -81,15 +92,6 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="Start Time"
-            type="time"
-            name="startTime"
-            value={formData.startTime}
-            onChange={handleChange}
-            required
-          />
-
-          <Input
             label="End Time"
             type="time"
             name="endTime"
@@ -104,16 +106,7 @@ export function StudyGroupsForm (){
             name="location"
             value={formData.location}
             onChange={handleChange}
-            required
-          />
-
-          <Input
-            label="Capacity"
-            type="number"
-            name="capacity"
-            value={formData.capacity}
-            onChange={handleChange}
-            required
+            
           />
 
           <Button type="submit" className="w-full" disabled={loading}>
