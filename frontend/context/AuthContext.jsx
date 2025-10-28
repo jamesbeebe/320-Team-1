@@ -23,6 +23,7 @@ export function AuthProvider({ children }) {
     authService
       .isAuthenticated()
       .then((user) => {
+        console.log("the user from isAuthenticated",user);
         setUser(user);
         setLoading(false);
         router.push("/dashboard");

@@ -31,24 +31,20 @@ class ApiService {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    try {
-      const response = await fetch(url, config);
+    const response = await fetch(url, config);
 
-      // Check content type to determine how to parse response
-      const contentType = response.headers.get("content-type");
-      const isJson = contentType && contentType.includes("application/json");
-
-      // Check if response is ok before trying to parse
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("API Error:", error);
-      throw error;
+    if (!response.ok) {
+      console.log(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
+    // Check content type to determine how to parse response
+    const contentType = response.headers.get("content-type");
+    const isJson = contentType && contentType.includes("application/json");
+
+
+
+    const data = await response.json();
+    return data;
   }
 
   getToken() {

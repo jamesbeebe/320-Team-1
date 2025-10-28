@@ -1,7 +1,6 @@
 import router from "express";
 import { log } from "../logs/logger.js";
 import { supabase } from "../supabase-client.js";
-import authenticate from "../utils/auth.js";
 
 export const authRouter = router();
 
@@ -93,13 +92,40 @@ authRouter.post("/logout", async (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
-authRouter.get("/me ", async (req, res) => {
+authRouter.get("/me", async (req, res) => {
   const { refresh_token } = req.cookies;
-  log("info", `getting user: ${refresh_token}`);
-  const { data, error } = await supabase.auth.getUser(refresh_token);
-  if (error) {
-    log("error", `error getting user: ${error.message}`);
-    return res.status(500).json({ error: "Failed to get user" });
+  log("info", `refresh token: ${refresh_token}`);
+  if (!refresh_token) {
+    return res.status(401).json({ error: "Not authenticated" });
   }
-  return res.status(200).json({ user: user });
+
+  // Use refresh token to obtain a valid session (and access token)
+  const { data, error } = await supabase.auth.refreshSession({ refresh_token });
+  if (error) {
+    log("error", `error refreshing session: ${error.message}`);
+    return res.status(401).json({ error: "Invalid or expired session" });
+  }
+
+  if (data.error){
+    log("error", `error refreshing session: ${data.error}`);
+    return res.status(401).json({ error: data.error });
+  }
+
+
+  const { session } = data || {};
+  if (!session || !session.user) {
+    return res.status(401).json({ error: "Invalid session" });
+  }
+
+  // If Supabase rotated the refresh token, update the cookie
+  log("info", `session.refresh_token: ${JSON.stringify(session)}`)
+  if (session.refresh_token && session.refresh_token !== refresh_token) {
+    res.cookie(
+      "refresh_token",
+      session.refresh_token,
+      getRefreshCookieOptions()
+    );
+  }
+
+  return res.status(200).json({ user: session.user });
 });

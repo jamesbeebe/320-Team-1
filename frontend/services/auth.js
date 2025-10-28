@@ -5,10 +5,11 @@ export const authService = {
   async isAuthenticated() {
     try {
       const data = await api.get("/auth/me");
-      return data.user || null;
+      console.log("the data from isAuthenticated",data);
+      return data.user.user_metadata;
     } catch (error) {
-      console.error("Authentication check failed:", error);
-      return null;
+      console.log("Authentication check failed:", error);
+      throw error;
     }
   },
 
@@ -34,25 +35,12 @@ export const authService = {
         major,
         gradYear: gradYear,
       });
-      // Backend sets refresh_token as httpOnly cookie
-      // Return accessToken to be stored in memory (Context API state)
       return data;
     } catch (error) {
       throw error;
     }
   },
 
-  // Refresh access token using httpOnly cookie
-  // This should be called automatically when access token expires or on app load
-  async refreshAuthToken() {
-    try {
-      const data = await api.get("/auth/refresh");
-      // Backend sends new accessToken in JSON and sets new refresh_token cookie
-      return data;
-    } catch (error) {
-      throw error;
-    }
-  },
 
   // Logout - clears httpOnly cookie on server
   async logout() {
