@@ -93,39 +93,13 @@ authRouter.post("/logout", async (req, res) => {
   return res.status(200).json({ message: "Logged out successfully" });
 });
 
-authRouter.get("/refresh", async (req, res) => {
+authRouter.get("/me ", async (req, res) => {
   const { refresh_token } = req.cookies;
-  log("info", `refreshing tokens for ${refresh_token}`);
-  if (!refresh_token) {
-    return res.status(401).json({ error: "No refresh token" });
+  log("info", `getting user: ${refresh_token}`);
+  const { data, error } = await supabase.auth.getUser(refresh_token);
+  if (error) {
+    log("error", `error getting user: ${error.message}`);
+    return res.status(500).json({ error: "Failed to get user" });
   }
-
-  try {
-    // Use refresh token to get new session
-    const { data, error } = await supabase.auth.refreshSession(refresh_token);
-
-    if (error || !data.session) {
-      log("error", `error refreshing token: ${error?.message}`);
-      res.clearCookie("refresh_token");
-      return res.status(401).json({ error: "Invalid refresh token" });
-    }
-
-    log("info", `refreshed tokens successfully`);
-
-    // Store NEW refresh token in httpOnly cookie (token rotation)
-    res.cookie(
-      "refresh_token",
-      data.session.refresh_token,
-      getRefreshCookieOptions()
-    );
-
-    // Send NEW access token in JSON
-    return res.status(200).json({
-      accessToken: data.session.access_token,
-      user: data.user,
-    });
-  } catch (error) {
-    log("error", `Unexpected error: ${error.message}`);
-    return res.status(500).json({ error: "Failed to refresh token" });
-  }
+  return res.status(200).json({ user: user });
 });
