@@ -10,8 +10,8 @@ export default function Header() {
   const { user, logout} = useAuth();
   const router = useRouter(); 
   const handleLogout = async () => {
-    await logout()
     router.push('/login');
+    await logout()
   };
   // Don't show header on auth pages
   if (pathname === '/login' || pathname === '/signup' || pathname === '/onboarding') {
