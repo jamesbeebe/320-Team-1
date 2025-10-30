@@ -20,3 +20,9 @@ export const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_ANON_KEY
 );
+
+// Create a new Supabase client instance for per-request auth state
+// This prevents session conflicts when multiple requests are handled concurrently
+export function createSupabaseClient() {
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_ANON_KEY);
+}
