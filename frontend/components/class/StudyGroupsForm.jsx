@@ -13,7 +13,6 @@ export function StudyGroupsForm (){
     studyGroupName: '',
     date: '',
     endTime: '',
-    location: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -98,15 +97,6 @@ export function StudyGroupsForm (){
             value={formData.endTime}
             onChange={handleChange}
             required
-          />
-
-          <Input
-            label="Location"
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            
           />
 
           <Button type="submit" className="w-full" disabled={loading}>
