@@ -5,6 +5,12 @@ const API_BASE_URL =
 class ApiService {
   constructor() {
     this.baseURL = API_BASE_URL;
+    this.tokenGetter = null; // Function to get token from context/memory
+  }
+
+  // Set a function that returns the current access token from context
+  setTokenGetter(tokenGetter) {
+    this.tokenGetter = tokenGetter;
   }
 
   // Helper method for making requests
@@ -15,76 +21,37 @@ class ApiService {
         "Content-Type": "application/json",
         ...options.headers,
       },
+      credentials: "include", // Include cookies in the request
       ...options,
     };
 
-    // Add auth token if it exists
+    // Add auth token if it exists (from context/memory)
     const token = this.getToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
 
-    try {
-      const response = await fetch(url, config);
+    const response = await fetch(url, config);
 
-      // Check content type to determine how to parse response
-      const contentType = response.headers.get("content-type");
-      const isJson = contentType && contentType.includes("application/json");
-
-      // Check if response is ok before trying to parse
-      if (!response.ok) {
-        let errorMessage = `HTTP ${response.status}: ${response.statusText}`;
-
-        if (isJson) {
-          try {
-            const errorData = await response.json();
-            errorMessage = errorData.message || errorMessage;
-          } catch (parseError) {
-            errorMessage = `Failed to parse error response. Status: ${response.status}`;
-          }
-        } else {
-          // Not JSON, likely HTML error page
-          errorMessage = `Server returned non-JSON response (${
-            contentType || "unknown type"
-          }). Status: ${response.status}. URL: ${url}`;
-        }
-
-        throw new Error(errorMessage);
-      }
-
-      // Parse successful response as JSON
-      if (!isJson) {
-        throw new Error(
-          `Expected JSON response but got ${contentType}. URL: ${url}`
-        );
-      }
-
-      const data = await response.json();
-      return data;
-    } catch (error) {
-      console.error("API Error:", error);
-      throw error;
+    if (!response.ok) {
+      console.log(`HTTP ${response.status}: ${response.statusText}`);
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
+    // Check content type to determine how to parse response
+    const contentType = response.headers.get("content-type");
+    const isJson = contentType && contentType.includes("application/json");
+
+
+
+    const data = await response.json();
+    return data;
   }
 
-  // Token management
   getToken() {
-    if (typeof window !== "undefined") {
-      return localStorage.getItem("authToken");
+    if (this.tokenGetter) {
+      return this.tokenGetter();
     }
     return null;
-  }
-
-  setToken(token) {
-    if (typeof window !== "undefined") {
-      localStorage.setItem("authToken", token);
-    }
-  }
-
-  removeToken() {
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("authToken");
-    }
   }
 
   // GET request

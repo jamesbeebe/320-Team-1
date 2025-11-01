@@ -35,7 +35,6 @@ export default function SignupPage() {
       // Navigation handled by AuthContext
     } catch (err) {
       setError(err.message || 'Failed to create account. Please try again.');
-      console.error('Signup error:', err);
     } finally {
       setLoading(false);
     }
