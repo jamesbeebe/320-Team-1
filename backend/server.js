@@ -1,6 +1,7 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
@@ -29,6 +30,9 @@ app.use(
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+// Middleware to parse cookies
+app.use(cookieParser());
+
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
 chatManager.setupWebSocket(websocketServer);
@@ -47,3 +51,4 @@ app.use("/api/auth", authRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/users", userRouter)
 app.use("/api/chats", chatRouter)
+app.use("/api/users", userRouter);
