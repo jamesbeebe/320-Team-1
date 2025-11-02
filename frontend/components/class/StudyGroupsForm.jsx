@@ -1,8 +1,9 @@
 "use client"
 
-import { useContext, useState} from "react";
+import {useState} from "react";
 import {useRouter, useParams} from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import { studyGroupService } from "@/services";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -45,16 +46,10 @@ export function StudyGroupsForm (){
       const local = new Date(`${formData.date}T${formData.endTime}`);
       const timestamp = local.toISOString(); 
 
-      await fetch(`http://localhost:8080/api/chats/class/${id}/`, {
-        method: "POST",
-        headers: {"Content-Type": "application/json",
-        "Authorization": `Bearer ${accessToken}`
-        },
-        body: JSON.stringify({
+
+      await studyGroupService.createStudyGroup(id, {
           name: formData.studyGroupName,
           expiresAt: timestamp
-        }),
-        mode: "cors",
       });
 
       router.push(`/class/${id}`);
