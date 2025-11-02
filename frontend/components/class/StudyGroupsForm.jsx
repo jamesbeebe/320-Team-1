@@ -1,13 +1,15 @@
 "use client"
 
-import { useState} from "react";
+import { useContext, useState} from "react";
 import {useRouter, useParams} from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
 
 export function StudyGroupsForm (){
   const router = useRouter();
+  const {accessToken} = useAuth();
   const {id} = useParams();
   const [formData, setFormData] = useState({
     studyGroupName: '',
@@ -39,12 +41,21 @@ export function StudyGroupsForm (){
         throw new Error("End time can't be empty.");
       }
 
-      if(formData.endTime < formData.startTime){
-        throw new Error("Invalid time: End Time is before Start Time.")
-      }
-
       //Todo
-      await createStudyGroup();
+      const local = new Date(`${formData.date}T${formData.endTime}`);
+      const timestamp = local.toISOString(); 
+
+      await fetch(`http://localhost:8080/api/chats/class/${id}/`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json",
+        "Authorization": `Bearer ${accessToken}`
+        },
+        body: JSON.stringify({
+          name: formData.studyGroupName,
+          expiresAt: timestamp
+        }),
+        mode: "cors",
+      });
 
       router.push(`/class/${id}`);
     } catch (err) {
