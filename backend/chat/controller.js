@@ -6,11 +6,10 @@ export async function getAllChatsForClass(classId) {
     .select(`
         id,
         name,
-        expires_at,
-        type
+        expires_at
         `)
     .eq("class_id", classId)
-    .lte("expires_at", new Date().toISOString());
+    .gte("expires_at", new Date().toISOString());
   return { data, error };
 }
 
@@ -20,12 +19,12 @@ export async function getSpecificTypeForClass(classId, type){
     .select(`
       id,
       name,
-      expires_at,
-      type  
+      expires_at
     `)
     .eq("class_id", classId)
     .eq("type", type)
-    .lte("expires_at", new Date().toISOString());
+    .gte("expires_at", new Date().toISOString())
+    .order("expires_at", {ascending: true});
   return {data, error};
 }
 
