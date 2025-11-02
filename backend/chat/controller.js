@@ -14,6 +14,21 @@ export async function getAllChatsForClass(classId) {
   return { data, error };
 }
 
+export async function getSpecificTypeForClass(classId, type){
+  const {data, error} = await supabase
+    .from("chats")
+    .select(`
+      id,
+      name,
+      expires_at,
+      type  
+    `)
+    .eq("class_id", classId)
+    .eq("type", type)
+    .lte("expires_at", new Date().toISOString());
+  return {data, error};
+}
+
 export async function createChatForClass(classId, name, expiresAt, type) {
   const { data, error } = await supabase
     .from("chats")

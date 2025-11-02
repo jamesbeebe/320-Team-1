@@ -1,11 +1,20 @@
 'use client';
 
 import Link from 'next/link';
+import { useState } from 'react';
 import { useParams } from 'next/navigation';
 import Card from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 
 // Mock data
+
+const [studyGroups, setStudyGroups] = useState([]);
+
+useEffect(() => {
+  const getStudyGroups = async () => {
+    
+  }
+})
 const mockStudyGroups = [
   {
     id: 1,
