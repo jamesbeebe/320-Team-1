@@ -1,13 +1,13 @@
 'use client'
 
-import IcsUploader from '../components/ui/IcsUploader'
-import Input from '../components/ui/Input'
-import Button from '../components/ui/Button'
-import Card from '../components/ui/Card'
+import IcsUploader from '../../components/ui/IcsUploader'
+import Input from '../../components/ui/Input'
+import Button from '../../components/ui/Button'
+import Card from '../../components/ui/Card'
 
 export default function ClassSelection() {
     return (
-        <Box
+        <Card
           minH = "100vh"
           bg = "gray.100"
           display = "flex"
@@ -39,6 +39,6 @@ export default function ClassSelection() {
             <Text color = "maroon" fontSize = "l" fontWeight = "bold">OR</Text>
             <IcsUploader/>
           </VStack>
-        </Box>
+        </Card>
     )
 }
