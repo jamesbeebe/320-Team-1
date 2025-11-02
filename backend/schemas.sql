@@ -26,6 +26,14 @@ CREATE TABLE messages (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
+CREATE TABLE user_chats {
+  user_id UUID PRIMARY KEY,
+  chat_id UUID PRIMARY KEY,
+
+  FOREIGN KEY (user_id) REFERENCES users(id),
+  FOREIGN KEY (chat_id) REFERENCES chats(id)
+};
+
 -- trigger to inser user into users table from auth.users upon signup
 create or replace function insert_public_user()
 returns trigger
