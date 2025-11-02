@@ -18,9 +18,9 @@ chatRouter.get("/class/:classId/", async (req, res) => {
 
 chatRouter.post("/class/:classId/", async (req, res) => {
   const { classId } = req.params;
-  const { name , expiresAt} = req.body;
-  log("info", `Creating chat for class ${classId} with name ${name} and expiresAt ${expiresAt}`);
-  const { data, error } = await createChatForClass(classId, name, expiresAt);
+  const { name , expiresAt, type} = req.body;
+  log("info", `Creating chat for class ${classId} with name ${name} and expiresAt ${expiresAt} and type ${type}`);
+  const { data, error } = await createChatForClass(classId, name, expiresAt, type);
   if (error) {
     log("error", `Error creating chat: ${error.message}`);
     return res.status(500).json({ error: error.message });

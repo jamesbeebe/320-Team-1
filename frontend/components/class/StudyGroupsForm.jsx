@@ -2,7 +2,6 @@
 
 import {useState} from "react";
 import {useRouter, useParams} from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import { studyGroupService } from "@/services";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
@@ -10,7 +9,6 @@ import Button from "../ui/Button";
 
 export function StudyGroupsForm (){
   const router = useRouter();
-  const {accessToken} = useAuth();
   const {id} = useParams();
   const [formData, setFormData] = useState({
     studyGroupName: '',
@@ -46,6 +44,9 @@ export function StudyGroupsForm (){
       const local = new Date(`${formData.date}T${formData.endTime}`);
       const timestamp = local.toISOString(); 
 
+      if(new Date(timestamp) < new Date()){
+        throw new Error("Time and date when chat expires cannot be before now.")
+      }
 
       await studyGroupService.createStudyGroup(id, {
           name: formData.studyGroupName,
@@ -79,7 +80,7 @@ export function StudyGroupsForm (){
           )}
 
           <Input
-            label="Study Group Name"
+            label="Study Group Name *"
             type="text"
             name="studyGroupName"
             value={formData.studyGroupName}
@@ -88,7 +89,7 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="Date"
+            label="Date *"
             type="date"
             name="date"
             value={formData.date}
@@ -97,7 +98,7 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="End Time"
+            label="End Time *"
             type="time"
             name="endTime"
             value={formData.endTime}

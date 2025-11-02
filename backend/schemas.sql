@@ -12,6 +12,8 @@ CREATE TABLE chats (
     class_id INT4,
     created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
     expires_at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    type VARCHAR(255),
+    
     FOREIGN KEY (class_id) REFERENCES classes(id)
 );
 

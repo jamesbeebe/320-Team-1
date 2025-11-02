@@ -6,17 +6,18 @@ export async function getAllChatsForClass(classId) {
     .select(`
         id,
         name,
-        expires_at
+        expires_at,
+        type
         `)
     .eq("class_id", classId)
     .lte("expires_at", new Date().toISOString());
   return { data, error };
 }
 
-export async function createChatForClass(classId, name, expiresAt) {
+export async function createChatForClass(classId, name, expiresAt, type) {
   const { data, error } = await supabase
     .from("chats")
-    .insert({ name: name, class_id: classId, created_at: new Date().toISOString(), expires_at: expiresAt })
+    .insert({ name: name, class_id: classId, created_at: new Date().toISOString(), expires_at: expiresAt, type: type})
     .select()
     .single();
   return { data, error };
@@ -30,7 +31,8 @@ export async function updateChatForClass(chatId, name, expiresAt) {
     .select(`
         id,
         name,
-        expires_at
+        expires_at,
+        type
         `)
     .single();
   return { data, error };

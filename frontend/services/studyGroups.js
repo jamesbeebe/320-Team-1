@@ -13,7 +13,7 @@ export const studyGroupService = {
   // Create a study group
   async createStudyGroup(classId, groupData) {
     try {
-      return await api.post(`/chats/class/${classId}/`, { classId, ...groupData });
+      return await api.post(`/chats/class/${classId}/`, {...groupData, type: "study-group"});
     } catch (error) {
       throw error;
     }
