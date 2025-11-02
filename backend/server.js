@@ -8,6 +8,7 @@ import { messageRouter } from "./messages/routes.js";
 import { authRouter } from "./auth/routes.js";
 import { userRouter } from "./users/routes.js";
 import { chatRouter } from "./chat/routes.js";
+import { userChatsRouter } from "./user_chats/routes.js";
 
 export const app = express();
 export const httpServer = http.createServer(app);
@@ -52,3 +53,4 @@ app.use("/api/messages", messageRouter);
 app.use("/api/users", userRouter)
 app.use("/api/chats", chatRouter)
 app.use("/api/users", userRouter);
+app.use("/api/userChats", userChatsRouter);
