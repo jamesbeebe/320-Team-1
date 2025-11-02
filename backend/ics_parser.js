@@ -1,6 +1,6 @@
 import ical from 'node-ical';
 import { supabase } from './supabase-client.js';
-function parseIcs(filePath = 'test.ics') {
+export function parseIcs(filePath = 'test.ics') {
     const data = ical.sync.parseFile(filePath);
     let classArray = [];
     let subjectArray = [];
@@ -33,7 +33,7 @@ function parseIcs(filePath = 'test.ics') {
     };
 }
 
-async function findMatchingClassIds(filePath) {
+export async function findMatchingClassIds(filePath) {
   const { classArray, subjectArray, catalogArray, sectionArray } = parseIcs(filePath);
 
   let classIds = [];

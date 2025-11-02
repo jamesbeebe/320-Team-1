@@ -6,6 +6,7 @@ import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
 import { authRouter } from "./auth/routes.js";
 import { userRouter } from "./users/routes.js";
+import { icsRouter } from "./ics/routes.js"
 
 export const app = express();
 export const httpServer = http.createServer(app);
@@ -47,3 +48,4 @@ app.use("/api/auth", authRouter);
 // set up messages route
 app.use("/api/messages", messageRouter);
 app.use("/api/users", userRouter)
+app.use("/api/upload", icsRouter);

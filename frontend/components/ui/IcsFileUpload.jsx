@@ -2,41 +2,30 @@ import React, { useState } from 'react';
 import Button from './Button';
 import Card from './Card';
 import Input from './Input';
+import { uploadICSFile } from '../../services/ics'; // Import the upload function
 
 export default function IcsFileUpload({ onFileSelect }) {
   const [fileName, setFileName] = useState('');
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (file && file.name.endsWith('.ics')) {
         setFileName(file.name);
         if (onFileSelect) onFileSelect(file);
 
-        const formData = new FormData();
-        formData.append('file', file);
-
-        fetch('/api/upload-ics', {
-          method: 'POST',
-          body: formData,
-        })
-        .then((response) => {
-          if (!response.ok) throw new Error('Failed to upload file');
-            return response.json();
-          })
-          .then((data) => {
-            console.log('File uploaded successfully:', data);
-          })
-          .catch((error) => {
-            console.error('Error uploading file:', error);
-          });
-
+        try {
+          const data = await uploadICSFile(file);
+          console.log('File uploaded successfully:', data);
+        } catch (error) {
+          console.error('Error uploading file:', error);
+          alert('Failed to upload file');
+        }
     } else {
       alert('Please upload a valid .ics file');
       e.target.value = null;
       setFileName('');
     }
   }
-
 
   const handleButtonClick = () => {
     document.getElementById('ics-file-input').click();
