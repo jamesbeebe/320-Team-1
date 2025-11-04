@@ -57,8 +57,8 @@ $$;
 
 create or replace function create_chat_and_enroll_user(
   user_id uuid,
-  chat_name text,
-  class_id uuid,
+  chat_name VARCHAR(255),
+  class_id INT4,
   expires_at timestamptz
 )
 returns uuid as $$

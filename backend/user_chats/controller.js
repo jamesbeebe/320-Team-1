@@ -13,7 +13,7 @@ export async function getAllUserChatsForSpecificClass(classId, userId){
   const {data, error} = await supabase
     .from("user_chats")
     .select(`
-      chats(id,
+      ...chats(id,
       name,
       type
       )
