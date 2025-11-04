@@ -16,9 +16,11 @@ class ApiService {
   // Helper method for making requests
   async request(endpoint, options = {}) {
     const url = `${this.baseURL}${endpoint}`;
+    const isFormData = options.body instanceof FormData;
+    
     const config = {
       headers: {
-        "Content-Type": "application/json",
+        ...(!isFormData && { "Content-Type": "application/json" }),
         ...options.headers,
       },
       credentials: "include", // Include cookies in the request
