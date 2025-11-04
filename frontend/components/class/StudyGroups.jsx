@@ -7,35 +7,6 @@ import { studyGroupService } from "@/services";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 
-// Mock data
-
-const mockStudyGroups = [
-  {
-    id: 1,
-    name: "Midterm 1 Review",
-    date: "October 10, 2025",
-    time: "3:00 PM - 5:00 PM",
-    location: "Library Study Room 204",
-    spots: { filled: 2, total: 5 },
-  },
-  {
-    id: 2,
-    name: "Dynamic Programming Practice",
-    date: "October 12, 2025",
-    time: "7:00 PM - 9:00 PM",
-    location: "Zoom (link in chat)",
-    spots: { filled: 5, total: 8 },
-  },
-  {
-    id: 3,
-    name: "Final Project Discussion",
-    date: "October 15, 2025",
-    time: "4:00 PM - 6:00 PM",
-    location: "Engineering Hall 201",
-    spots: { filled: 3, total: 6 },
-  },
-];
-
 export default function StudyGroups() {
   const { id } = useParams();
   const [studyGroups, setStudyGroups] = useState([]);
