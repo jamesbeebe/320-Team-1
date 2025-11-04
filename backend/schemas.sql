@@ -55,31 +55,27 @@ begin
 end;
 $$;
 
-create or replace function create_chat_and_enroll_user(
+create or replace function public.create_chat_and_enroll_user(
   user_id uuid,
-  chat_name VARCHAR(255),
-  class_id INT4,
+  chat_name varchar(255),
+  class_id int4,
   expires_at timestamptz
 )
 returns uuid as $$
 declare
   new_chat_id uuid;
 begin
-  -- Create the chat (include class_id and expires_at if they exist in the table)
   insert into chats (name, class_id, expires_at, type)
-  values (chat_name, class_id, expires_at, "study-group")
+  values (chat_name, class_id, expires_at, 'study-group')
   returning id into new_chat_id;
 
-  -- Enroll the user
-  insert into user_chat (user_id, chat_id)
+  insert into user_chats(user_id, chat_id)
   values (user_id, new_chat_id);
 
-  -- Return the new chat id
   return new_chat_id;
 
 exception
   when others then
-    -- On any error, the transaction is automatically rolled back
     raise;
 end;
 $$ language plpgsql;

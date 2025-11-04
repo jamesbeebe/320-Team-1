@@ -35,7 +35,7 @@ export async function getSpecificTypeForClass(classId, type) {
 export async function createChatForClass(classId, name, expiresAt, userId) {
   const { data, error } = await supabase.rpc("create_chat_and_enroll_user", {
     user_id: userId,
-    name: name,
+    chat_name: name,
     class_id: classId,
     expires_at: expiresAt
   });
