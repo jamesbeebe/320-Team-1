@@ -1,12 +1,14 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
+import cookieParser from "cookie-parser";
 import { WebSocketServer } from "ws";
 import { ChatManager } from "./websocket/ChatManager.js";
 import { messageRouter } from "./messages/routes.js";
 import { authRouter } from "./auth/routes.js";
 import { userRouter } from "./users/routes.js";
 import { icsRouter } from "./ics/routes.js"
+import { chatRouter } from "./chat/routes.js";
 
 export const app = express();
 export const httpServer = http.createServer(app);
@@ -19,7 +21,7 @@ const PORT = 8080;
 // CORS configuration to allow frontend requests
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -29,7 +31,8 @@ app.use(
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
-app.use(cors({ origin: "http://localhost:3000" }));
+// Middleware to parse cookies
+app.use(cookieParser());
 
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
@@ -49,3 +52,5 @@ app.use("/api/auth", authRouter);
 app.use("/api/messages", messageRouter);
 app.use("/api/users", userRouter)
 app.use("/api/upload", icsRouter);
+app.use("/api/chats", chatRouter)
+app.use("/api/users", userRouter);
