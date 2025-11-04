@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 // Mock data - will be replaced with backend API
 const mockUserClasses = [
   {
-    id: 1,
+    id: 27,
     code: 'CS 311',
     name: 'Intro to Algorithms',
     semester: 'Fall 2025',

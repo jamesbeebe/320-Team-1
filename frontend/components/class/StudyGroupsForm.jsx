@@ -1,7 +1,8 @@
 "use client"
 
-import { useState} from "react";
+import {useState} from "react";
 import {useRouter, useParams} from "next/navigation";
+import { studyGroupService } from "@/services";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
 import Button from "../ui/Button";
@@ -13,7 +14,6 @@ export function StudyGroupsForm (){
     studyGroupName: '',
     date: '',
     endTime: '',
-    location: '',
   });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -40,12 +40,18 @@ export function StudyGroupsForm (){
         throw new Error("End time can't be empty.");
       }
 
-      if(formData.endTime < formData.startTime){
-        throw new Error("Invalid time: End Time is before Start Time.")
+      //Todo
+      const local = new Date(`${formData.date}T${formData.endTime}`);
+      const timestamp = local.toISOString(); 
+
+      if(new Date(timestamp) < new Date()){
+        throw new Error("Time and date when chat expires cannot be before now.")
       }
 
-      //Todo
-      await createStudyGroup();
+      await studyGroupService.createStudyGroup(id, {
+          name: formData.studyGroupName,
+          expiresAt: timestamp
+      });
 
       router.push(`/class/${id}`);
     } catch (err) {
@@ -74,7 +80,7 @@ export function StudyGroupsForm (){
           )}
 
           <Input
-            label="Study Group Name"
+            label="Study Group Name *"
             type="text"
             name="studyGroupName"
             value={formData.studyGroupName}
@@ -83,7 +89,7 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="Date"
+            label="Date *"
             type="date"
             name="date"
             value={formData.date}
@@ -92,21 +98,12 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="End Time"
+            label="End Time *"
             type="time"
             name="endTime"
             value={formData.endTime}
             onChange={handleChange}
             required
-          />
-
-          <Input
-            label="Location"
-            type="text"
-            name="location"
-            value={formData.location}
-            onChange={handleChange}
-            
           />
 
           <Button type="submit" className="w-full" disabled={loading}>
