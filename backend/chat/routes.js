@@ -8,12 +8,15 @@ export const chatRouter = router();
 
 chatRouter.get("/class/:classId/", async (req, res) => {
   const { classId } = req.params;
-  const { data, error } = await getAllChatsForClass(classId);
+  const { userId } = req.body;
+  log("info", `Getting all chats for class ${classId} and user ${userId}`);
+  const { response, error } = await getAllChatsForClass(classId, userId);
+  log("info", `Response: ${JSON.stringify(response)}, Error: ${JSON.stringify(error)}`);
   if (error) {
     log("error", `Error getting chat: ${error.message}`);
     return res.status(500).json({ error: error.message });
   }
-  return res.status(200).json(data);
+  return res.status(200).json(response);
 });
 
 chatRouter.get("/class/:classId/:type", async (req, res) => {

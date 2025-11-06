@@ -1,18 +1,13 @@
 import { supabase } from "../supabase-client.js";
 
-export async function getAllChatsForClass(classId) {
-  const { data, error } = await supabase
-    .from("chats")
-    .select(
-      `
-        id,
-        name,
-        expires_at
-        `
-    )
-    .eq("class_id", classId)
-    .gte("expires_at", new Date().toISOString());
-  return { data, error };
+export async function getAllChatsForClass(classId, userId) {
+  const { data, error } = await supabase.rpc("get_all_chats_for_class", {
+    classid: classId,
+    date: new Date().toISOString(),
+    userid: userId
+  });
+
+  return { response: data, error };
 }
 
 export async function getSpecificTypeForClass(classId, type) {
@@ -37,9 +32,9 @@ export async function createChatForClass(classId, name, expiresAt, userId) {
     user_id: userId,
     chat_name: name,
     class_id: classId,
-    expires_at: expiresAt
+    expires_at: expiresAt,
   });
-  return {data, error};
+  return { data, error };
 }
 
 export async function updateChatForClass(chatId, name, expiresAt) {
