@@ -3,7 +3,6 @@ import api from './api';
 export const studyGroupService = {
   // Get study groups for a class
   async getStudyGroups(classId, userId) {   
-    console.log("this is the userId  from the func call--->", userId);
     try {
       return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
     } catch (error) {
@@ -21,18 +20,18 @@ export const studyGroupService = {
   },
 
   // Join a study group
-  async joinStudyGroup(groupId) {
+  async joinStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/study-groups/${groupId}/join`);
+      return await api.post(`/chats/class/${chatId}/join`, {userId: userId});
     } catch (error) {
       throw error;
     }
   },
 
   // Leave a study group
-  async leaveStudyGroup(groupId) {
+  async leaveStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/study-groups/${groupId}/leave`);
+      return await api.post(`/chats/class/${chatId}/leave`, {userId: userId});
     } catch (error) {
       throw error;
     }

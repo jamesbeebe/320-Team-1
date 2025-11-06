@@ -4,7 +4,7 @@ export async function getAllChatsForClass(classId, userId) {
   const { data, error } = await supabase.rpc("get_all_chats_for_class", {
     classid: classId,
     date: new Date().toISOString(),
-    userid: userId
+    userid: userId,
   });
 
   return { response: data, error };
@@ -50,6 +50,60 @@ export async function updateChatForClass(chatId, name, expiresAt) {
         type
         `
     )
+    .single();
+  return { data, error };
+}
+
+export async function joinChat(chatId, userId) {
+  const { data: existingRows, error: existingError } = await supabase
+    .from("user_chats")
+    .select("chat_id")
+    .eq("user_id", userId)
+    .eq("chat_id", chatId)
+    .limit(1);
+
+  if (existingError) {
+    return { data: null, error: existingError };
+  }
+
+  if (existingRows && existingRows.length > 0) {
+    return { data: existingRows[0], error: null };
+  }
+
+  const { data, error } = await supabase
+    .from("user_chats")
+    .insert({ user_id: userId, chat_id: chatId })
+    .select()
+    .single();
+  return { data, error };
+}
+
+export async function leaveChat(chatId, userId) {
+  const { data: existingRows, error: existingError } = await supabase
+    .from("user_chats")
+    .select("chat_id")
+    .eq("user_id", userId)
+    .eq("chat_id", chatId)
+    .limit(1);
+
+  if (existingError) {
+    return { data: null, error: existingError };
+  }
+
+  if (!existingRows || existingRows.length === 0) {
+    return {
+      data: null,
+      error: { message: "User is not enrolled in this chat." },
+    };
+  }
+
+  const existingId = existingRows[0].id;
+
+  const { data, error } = await supabase
+    .from("user_chats")
+    .delete()
+    .eq("chat_id", chatId)
+    .select()
     .single();
   return { data, error };
 }

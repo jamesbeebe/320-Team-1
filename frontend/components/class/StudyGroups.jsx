@@ -22,10 +22,11 @@ export default function StudyGroups() {
           const readableDate = new Date(group.expires_at).toLocaleString();
           const splitted = readableDate.split(", ");
           return {
-            id: group.chat+id,
+            id: group.chat + id,
             name: group.chat_name,
             date: splitted[0],
             time: splitted[1].replace(":00", ""),
+            enrolled_in: group.enrolled_in,
           };
         });
         setStudyGroups(dataMap);
@@ -37,6 +38,23 @@ export default function StudyGroups() {
     getGroups();
   }, [user, loading]);
 
+  const handleJoinStudyGroup = async (chatId) => {
+    try {
+      await studyGroupService.joinStudyGroup(chatId);
+    } catch (error) {
+      setError(error.message);
+      console.error("Error joining study group: ", error);
+    }
+  };
+
+  const handleLeaveStudyGroup = async (chatId) => {
+    try {
+      await studyGroupService.leaveStudyGroup(groupId);
+    } catch (error) {
+      setError(error.message);
+      console.error("Error leaving study group: ", error);
+    }
+  };
   return (
     <div>
       <div className="mb-6">
@@ -111,8 +129,7 @@ export default function StudyGroups() {
                   </div>
                 </div>
               </div>
-
-              {group.enrolled ? (
+              {group.enrolled_in ? (
                 <Button className="ml-4">Leave</Button>
               ) : (
                 <Button className="ml-4">Join</Button>
