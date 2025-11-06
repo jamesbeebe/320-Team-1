@@ -47,6 +47,31 @@ begin
 end;
 $$;
 
+create or replace function public.create_chat_and_enroll_user(
+  user_id uuid,
+  chat_name varchar(255),
+  class_id int4,
+  expires_at timestamptz
+)
+returns uuid as $$
+declare
+  new_chat_id uuid;
+begin
+  insert into chats (name, class_id, expires_at, type)
+  values (chat_name, class_id, expires_at, 'study-group')
+  returning id into new_chat_id;
+
+  insert into user_chats(user_id, chat_id)
+  values (user_id, new_chat_id);
+
+  return new_chat_id;
+
+exception
+  when others then
+    raise;
+end;
+$$ language plpgsql;
+
 1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
 
 f3c4b727-98a5-4a07-9384-859a02ef6f9b
