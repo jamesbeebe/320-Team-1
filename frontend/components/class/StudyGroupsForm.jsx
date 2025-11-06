@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import {useRouter, useParams} from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 import { studyGroupService } from "@/services";
 import Card from "../ui/Card";
 import Input from "../ui/Input";
@@ -9,6 +10,7 @@ import Button from "../ui/Button";
 
 export function StudyGroupsForm (){
   const router = useRouter();
+  const {user} = useAuth();
   const {id} = useParams();
   const [formData, setFormData] = useState({
     studyGroupName: '',
@@ -47,15 +49,17 @@ export function StudyGroupsForm (){
       if(new Date(timestamp) < new Date()){
         throw new Error("Time and date when chat expires cannot be before now.")
       }
+      
 
       await studyGroupService.createStudyGroup(id, {
           name: formData.studyGroupName,
-          expiresAt: timestamp
+          expiresAt: timestamp,
+          userId: user.id
       });
 
       router.push(`/class/${id}`);
     } catch (err) {
-      setError(err.message || 'Failed to create study group. Please try again.');
+      setError(err.message + (user === undefined) || 'Failed to create study group. Please try again.');
       console.error('Error creating study group: ', err);
     } finally {
       setLoading(false);
