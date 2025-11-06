@@ -13,7 +13,7 @@ export function parseIcs(filePath = 'test.ics') {
             // Extract the class part from summary (e.g., "COMPSCI 383-01")
             const match = event.summary.match(/^([A-Z]+)\s+(\d+)-(\d+)/);
             if (match) {
-                const [fullMatch, subject, catalog, section] = match;
+                const [fullMatch, subject, catalog, section, course_title] = match;
                 if (!classArray.includes(fullMatch)) {
                     classArray.push(fullMatch);
                     subjectArray.push(subject.trim());    // e.g., "COMPSCI"
@@ -29,12 +29,12 @@ export function parseIcs(filePath = 'test.ics') {
         classArray,      // Full strings like "COMPSCI 383-01"
         subjectArray,    // Just "COMPSCI"
         catalogArray,    // Just "383"
-        sectionArray     // Just "01"
+        sectionArray,    // Just "01"
     };
 }
 
 export async function findMatchingClassIds(filePath) {
-  const { classArray, subjectArray, catalogArray, sectionArray } = parseIcs(filePath);
+  const { classArray, subjectArray, catalogArray, sectionArray} = parseIcs(filePath);
 
   let classIds = [];
 
@@ -77,6 +77,7 @@ export async function findMatchingClassIds(filePath) {
   }
 
   return classIds;
+  
 }
 
 (async () => {

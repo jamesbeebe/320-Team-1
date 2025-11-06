@@ -38,7 +38,7 @@ const mockUserClasses = [
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const router = useRouter();
-
+  console.log(user)
   useEffect(() => {
     if (!loading && !user) {
       router.push('/login');

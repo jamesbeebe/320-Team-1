@@ -6,6 +6,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
 import IcsFileUpload from '@/components/ui/IcsFileUpload';
+import { useAuth } from '@/context/AuthContext';
 
 // Mock data - will be replaced with backend API
 const mockClasses = [
@@ -20,7 +21,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [addedClasses, setAddedClasses] = useState([]);
-
+  const { user, loading } = useAuth();
   const filteredClasses = mockClasses.filter(
     (cls) =>
       !addedClasses.includes(cls.id) &&
@@ -84,11 +85,13 @@ export default function OnboardingPage() {
         </div>
 
         <Button
-          onClick={handleContinue}
+          onClick={() => {handleContinue(); }
+            
+          }
           disabled={addedClasses.length === 0}
           className="w-full bg-[#FFCDD2] hover:bg-[#EF9A9A] text-gray-700"
         >
-          View My Dashboard
+          Enroll in Classes
         </Button>
 
         {addedClasses.length > 0 && (
@@ -97,7 +100,20 @@ export default function OnboardingPage() {
           </p>
         )}
       </Card>
-      <IcsFileUpload/>
+      <IcsFileUpload
+  onFileUpload={(uploadedData) => {
+    let userClassesObject = [];
+    console.log(uploadedData);
+    for(let i = 0; i< uploadedData.classIds.length; i++){
+
+      userClassesObject.push({classId: uploadedData.classIds[i], subject: uploadedData.parsedData.subjectArray[i], catalog: uploadedData.parsedData.catalogArray[i], section: uploadedData.parsedData.sectionArray[i]})
+    }
+    console.log(userClassesObject)
+
+    // TODO: parse or merge classes from uploadedData
+  }}
+/>
+
     </div>
   );
 }
