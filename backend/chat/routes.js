@@ -1,6 +1,11 @@
-import router from "express";   
+import router from "express";
 import { log } from "../logs/logger.js";
-import { getAllChatsForClass, createChatForClass, updateChatForClass, getSpecificTypeForClass } from "./controller.js";
+import {
+  getAllChatsForClass,
+  createChatForClass,
+  updateChatForClass,
+  getSpecificTypeForClass,
+} from "./controller.js";
 
 export const chatRouter = router();
 
@@ -8,10 +13,13 @@ export const chatRouter = router();
 
 chatRouter.get("/class/:classId/", async (req, res) => {
   const { classId } = req.params;
-  const { userId } = req.body;
+  const { userId } = req.query;
   log("info", `Getting all chats for class ${classId} and user ${userId}`);
   const { response, error } = await getAllChatsForClass(classId, userId);
-  log("info", `Response: ${JSON.stringify(response)}, Error: ${JSON.stringify(error)}`);
+  log(
+    "info",
+    `Response: ${JSON.stringify(response)}, Error: ${JSON.stringify(error)}`
+  );
   if (error) {
     log("error", `Error getting chat: ${error.message}`);
     return res.status(500).json({ error: error.message });

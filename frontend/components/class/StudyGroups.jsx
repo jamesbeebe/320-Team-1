@@ -6,22 +6,24 @@ import { useParams } from "next/navigation";
 import { studyGroupService } from "@/services";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function StudyGroups() {
   const { id } = useParams();
   const [studyGroups, setStudyGroups] = useState([]);
   const [error, setError] = useState("");
-
+  const { user, loading } = useAuth();
   useEffect(() => {
     const getGroups = async () => {
       try {
-        const res = await studyGroupService.getStudyGroups(id);
+        const res = await studyGroupService.getStudyGroups(id, user.id);
+        console.log(res);
         const dataMap = res.map((group) => {
           const readableDate = new Date(group.expires_at).toLocaleString();
           const splitted = readableDate.split(", ");
           return {
-            id: group.id,
-            name: group.name,
+            id: group.chat+id,
+            name: group.chat_name,
             date: splitted[0],
             time: splitted[1].replace(":00", ""),
           };
@@ -33,7 +35,8 @@ export default function StudyGroups() {
       }
     };
     getGroups();
-  }, []);
+  }, [user, loading]);
+
   return (
     <div>
       <div className="mb-6">
@@ -109,7 +112,11 @@ export default function StudyGroups() {
                 </div>
               </div>
 
-              <Button className="ml-4">Join</Button>
+              {group.enrolled ? (
+                <Button className="ml-4">Leave</Button>
+              ) : (
+                <Button className="ml-4">Join</Button>
+              )}
             </div>
           </Card>
         ))}
