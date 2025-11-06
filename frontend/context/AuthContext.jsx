@@ -39,7 +39,7 @@ export function AuthProvider({ children }) {
     if (data.accessToken) {
       setAccessToken(data.accessToken);
     }
-    setUser(data.user.user_metadata);
+    setUser({id: data.user.id, ...data.user.user_metadata});
     router.push("/dashboard");
   };
 

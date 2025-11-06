@@ -17,18 +17,18 @@ export default function StudyGroups() {
     const getGroups = async () => {
       try {
         const res = await studyGroupService.getStudyGroups(id, user.id);
-        console.log(res);
         const dataMap = res.map((group) => {
           const readableDate = new Date(group.expires_at).toLocaleString();
           const splitted = readableDate.split(", ");
           return {
-            id: group.chat + id,
+            id: group.chat_id,
             name: group.chat_name,
             date: splitted[0],
             time: splitted[1].replace(":00", ""),
             enrolled_in: group.enrolled_in,
           };
         });
+        console.log(dataMap);
         setStudyGroups(dataMap);
       } catch (error) {
         setError(error.message);
@@ -40,7 +40,7 @@ export default function StudyGroups() {
 
   const handleJoinStudyGroup = async (chatId) => {
     try {
-      await studyGroupService.joinStudyGroup(chatId);
+      await studyGroupService.joinStudyGroup(user.id, chatId);
     } catch (error) {
       setError(error.message);
       console.error("Error joining study group: ", error);
@@ -49,7 +49,7 @@ export default function StudyGroups() {
 
   const handleLeaveStudyGroup = async (chatId) => {
     try {
-      await studyGroupService.leaveStudyGroup(groupId);
+      await studyGroupService.leaveStudyGroup(user.id, chatId);
     } catch (error) {
       setError(error.message);
       console.error("Error leaving study group: ", error);
@@ -130,9 +130,19 @@ export default function StudyGroups() {
                 </div>
               </div>
               {group.enrolled_in ? (
-                <Button className="ml-4">Leave</Button>
+                <Button
+                  className="ml-4"
+                  onClick={() => handleLeaveStudyGroup(group.id)}
+                >
+                  Leave
+                </Button>
               ) : (
-                <Button className="ml-4">Join</Button>
+                <Button
+                  className="ml-4"
+                  onClick={() => handleJoinStudyGroup(group.id)}
+                >
+                  Join
+                </Button>
               )}
             </div>
           </Card>
