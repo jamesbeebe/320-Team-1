@@ -110,6 +110,17 @@ as $$
 $$;
 
 
+create or replace function public.get_all_chats_for_user (
+  _user_id uuid
+) 
+RETURNS SETOF public.chats 
+LANGUAGE sql STABLE 
+as $$
+SELECT DISTINCT c.*
+FROM public.chats c
+WHERE c.id IN (SELECT chat_id FROM public.user_chats WHERE user_id = _user_id );
+$$;
+
 drop function if exists public.get_all_chats_for_class;
 
 

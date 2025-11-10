@@ -1,4 +1,12 @@
 import { supabase } from "../supabase-client.js";
+import { log } from "../logs/logger.js";
+
+export async function getAllUserChats(userId) {
+  const { data, error } = await supabase.rpc("get_all_chats_for_user", {
+    _user_id: userId,
+  });
+  return { data, error };
+}
 
 export async function getAllChatsForClass(classId, userId) {
   const { data, error } = await supabase.rpc("get_all_chats_for_class", {
@@ -7,7 +15,7 @@ export async function getAllChatsForClass(classId, userId) {
     userid: userId,
   });
 
-  return { response: data, error };
+  return {data, error };
 }
 
 export async function getSpecificTypeForClass(classId, type) {

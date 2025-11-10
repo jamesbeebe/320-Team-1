@@ -16,6 +16,7 @@ export default function StudyGroups() {
 
   useEffect(() => {
     const getGroups = async () => {
+      if (loading) return;
       try {
         const res = await studyGroupService.getStudyGroups(id, user.id);
         const dataMap = res.map((group) => {
@@ -29,7 +30,6 @@ export default function StudyGroups() {
             enrolled_in: group.enrolled_in,
           };
         });
-        console.log(dataMap);
         setStudyGroups(dataMap);
       } catch (error) {
         setError(error.message);
@@ -41,8 +41,12 @@ export default function StudyGroups() {
 
   const handleJoinStudyGroup = async (chatId) => {
     try {
-      console.log("Joining study group: ", chatId, user.id);
       await studyGroupService.joinStudyGroup(user.id, chatId);
+      setStudyGroups(
+        studyGroups.map((group) =>
+          group.id === chatId ? { ...group, enrolled_in: true } : group
+        )
+      );
     } catch (error) {
       setError(error.message);
       console.error("Error joining study group: ", error);
@@ -52,6 +56,11 @@ export default function StudyGroups() {
   const handleLeaveStudyGroup = async (chatId) => {
     try {
       await studyGroupService.leaveStudyGroup(user.id, chatId);
+      setStudyGroups(
+        studyGroups.map((group) =>
+          group.id === chatId ? { ...group, enrolled_in: false } : group
+        )
+      );
     } catch (error) {
       setError(error.message);
       console.error("Error leaving study group: ", error);

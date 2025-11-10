@@ -5,46 +5,59 @@ import { useAuth } from "@/context/AuthContext";
 import { chatService } from "@/services/chat";
 import Card from "@/components/ui/Card";
 
-// Mock channels
-const mockChannels = [
-  {
-    id: "1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0",
-    name: "CS 311 General",
-    type: "general",
-  },
-  {
-    id: "aa36e595-aae4-4a3f-b26e-952549a4d65d",
-    name: "Midterm 1 Review",
-    type: "general",
-  },
-  {
-    id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b",
-    name: "Dynamic Programming",
-    type: "study-group",
-  },
-];
+const getChannelId = (ch) => ch?.id ?? ch?.class_id ?? null;
+
+// Mock chanels
+// const mockChannels = [
+//   {
+//     class_id: "1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0",
+//     name: "CS 311 General",
+//     type: "general",
+//   },
+//   {
+//     id: "aa36e595-aae4-4a3f-b26e-952549a4d65d",
+//     name: "Midterm 1 Review",
+//     type: "general",
+//   },
+//   {
+//     id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b",
+//     name: "Dynamic Programming",
+//     type: "study-group",
+//   },
+// ];
 
 export default function ChatInterface() {
   const [messageInput, setMessageInput] = useState("");
-  const [channels] = useState(mockChannels);
-  const [channelMessages, setChannelMessages] = useState({});
-  const [selectedChannel, setSelectedChannel] = useState(channels[0]);
+  const [chanels, setChanels] = useState([]);
+  const [chanelMessages, setChanelMessages] = useState({});
+  const [selectedChanel, setSelectedChanel] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(false);
   const ws = useRef(null);
   const messagesScrollBottomRef = useRef(null);
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+
+  // fetch study group chats that the user is enrolled in
+  useEffect(() => {
+    if (loading || !user) return;
+    const getStudyGroupChats = async () => {
+      const studyGroupChats = await chatService.getChannelsForUser(user.id);
+      setChanels(studyGroupChats || []);
+      setSelectedChanel((prev) => prev ?? studyGroupChats?.[0] ?? null);
+    };
+    getStudyGroupChats();
+  }, [loading, user]);
 
   const formatMessage = (message) => {
-    const messageSenderName = message.name;
+    const messageSenderName = message.name || "Unknown User";
     const timestamp = new Date(message.timestamp).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
       hour12: true,
     });
 
-    const [firstName, lastName] = messageSenderName.split(" ");
+    const [firstName = "User", lastName = ""] = messageSenderName.split(" ");
     const sender = `${firstName} ${
       lastName ? lastName[0].toUpperCase() + "." : ""
     }`;
@@ -64,14 +77,17 @@ export default function ChatInterface() {
     };
   };
 
-  // Fetch messages for a specific channel
+  // Fetch messages for a specific chanel
   const fetchMessages = async (channelId) => {
     setIsLoading(true);
     setError(null);
     try {
       const messagesResponse = await chatService.getMessages(channelId);
-      const messagesMap = messagesResponse.map(formatMessage);
-      setChannelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
+      const list = Array.isArray(messagesResponse)
+        ? messagesResponse
+        : messagesResponse?.data || [];
+      const messagesMap = list.map(formatMessage);
+      setChanelMessages((prev) => ({ ...prev, [channelId]: messagesMap }));
     } catch (error) {
       console.error("Error loading messages:", error);
       setError("Failed to load messages. Please try again.");
@@ -81,20 +97,23 @@ export default function ChatInterface() {
   };
 
   useEffect(() => {
-    // Reset connection state and error when changing channels
+    if (!selectedChanel) return;
+    // Reset connection state and error when changing chanels
     setIsConnected(false);
     setError(null);
 
+    const channelId = getChannelId(selectedChanel);
+
     const handleMessage = (message) => {
-      setChannelMessages((prev) => {
-        const oldMessages = prev[selectedChannel.id] || [];
+      setChanelMessages((prev) => {
+        const oldMessages = prev[channelId] || [];
         // Prevent duplicate messages by checking if message already exists
         const isDuplicate = oldMessages.some((msg) => msg.id === message.id);
         if (isDuplicate) return prev;
 
         return {
           ...prev,
-          [selectedChannel.id]: [...oldMessages, formatMessage(message)],
+          [channelId]: [...oldMessages, formatMessage(message)],
         };
       });
     };
@@ -116,7 +135,7 @@ export default function ChatInterface() {
       setIsConnected(false);
     };
 
-    const wsConnection = chatService.connectToChannel(selectedChannel.id, {
+    const wsConnection = chatService.connectToChannel(channelId, {
       onMessage: handleMessage,
       onError: handleError,
       onOpen: handleOpen,
@@ -129,16 +148,19 @@ export default function ChatInterface() {
     ws.current = wsConnection;
 
     // Fetch initial messages
-    fetchMessages(selectedChannel.id);
+    fetchMessages(channelId);
 
     return () => {
       if (ws.current) {
         ws.current.close();
       }
     };
-  }, [selectedChannel]);
+  }, [selectedChanel]);
 
-  const messages = channelMessages[selectedChannel.id] || [];
+  const currentChannelId = selectedChanel ? getChannelId(selectedChanel) : null;
+  const messages = currentChannelId
+    ? chanelMessages[currentChannelId] || []
+    : [];
 
   useEffect(() => {
     if (messagesScrollBottomRef.current) {
@@ -171,41 +193,43 @@ export default function ChatInterface() {
 
   return (
     <div className="flex gap-4 h-[600px]">
-      {/* Channels Sidebar */}
+      {/* chanels Sidebar */}
       <Card className="w-64 p-4 flex flex-col">
-        <h3 className="font-semibold text-gray-900 mb-4">Class Channels</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">Class chanels</h3>
         <div className="space-y-2">
-          {channels
+          {chanels
             .filter((c) => c.type === "general")
-            .map((channel) => (
+            .map((chanel) => (
               <div
-                key={channel.id}
-                onClick={() => setSelectedChannel(channel)}
+                key={getChannelId(chanel)}
+                onClick={() => setSelectedChanel(chanel)}
                 className={`p-3 rounded-lg cursor-pointer transition-colors ${
-                  selectedChannel.id === channel.id
+                  selectedChanel &&
+                  getChannelId(selectedChanel) === getChannelId(chanel)
                     ? "bg-[#EF5350] text-white"
                     : "hover:bg-gray-100"
                 }`}
               >
-                {channel.name}
+                {chanel.name}
               </div>
             ))}
         </div>
         <h3 className="font-semibold text-gray-900 mt-6 mb-4">Study Groups</h3>
         <div className="space-y-2">
-          {channels
+          {chanels
             .filter((c) => c.type === "study-group")
-            .map((channel) => (
+            .map((chanel) => (
               <div
-                key={channel.id}
-                onClick={() => setSelectedChannel(channel)}
+                key={getChannelId(chanel)}
+                onClick={() => setSelectedChanel(chanel)}
                 className={`p-3 rounded-lg cursor-pointer transition-colors text-sm ${
-                  selectedChannel.id === channel.id
+                  selectedChanel &&
+                  getChannelId(selectedChanel) === getChannelId(chanel)
                     ? "bg-[#EF5350] text-white"
                     : "hover:bg-gray-100"
                 }`}
               >
-                {channel.name}
+                {chanel.name}
               </div>
             ))}
         </div>
@@ -217,7 +241,7 @@ export default function ChatInterface() {
         <div className="border-b border-gray-200 pb-4 mb-4">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold text-gray-900">
-              {selectedChannel.name}
+              {selectedChanel?.name || "Select a channel"}
             </h2>
             {/* Connection Status Indicator */}
             <div className="flex items-center gap-2">
@@ -306,7 +330,7 @@ export default function ChatInterface() {
           />
           <button
             type="submit"
-            disabled={!isConnected || !messageInput.trim()}
+            disabled={!selectedChanel || !isConnected || !messageInput.trim()}
             className="bg-[#EF5350] hover:bg-[#E53935] text-white p-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg

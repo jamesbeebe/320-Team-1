@@ -34,7 +34,7 @@ class ApiService {
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
-    
+
     // apply query params to URL
     if (
       params &&
@@ -58,20 +58,18 @@ class ApiService {
 
     // apply body to config
     config.body = JSON.stringify(options?.body);
-    console.log("requesting at url: ", url, "with config: ", config);
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      console.log(`HTTP ${response.status}: ${response.statusText}`);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     // Check content type to determine how to parse response
     const contentType = response.headers.get("content-type");
-    const isJson = contentType && contentType.includes("application/json");
-    if (isJson) {
-      return await response.json();
-    }
-    return await response.text();
+    // const isJson = contentType && contentType.includes("application/json");
+    // if (isJson) {
+    //   return await response.json();
+    // }
+    return await response.json();
   }
 
   getToken() {
