@@ -13,6 +13,7 @@ export default function StudyGroups() {
   const [studyGroups, setStudyGroups] = useState([]);
   const [error, setError] = useState("");
   const { user, loading } = useAuth();
+
   useEffect(() => {
     const getGroups = async () => {
       try {
@@ -40,6 +41,7 @@ export default function StudyGroups() {
 
   const handleJoinStudyGroup = async (chatId) => {
     try {
+      console.log("Joining study group: ", chatId, user.id);
       await studyGroupService.joinStudyGroup(user.id, chatId);
     } catch (error) {
       setError(error.message);

@@ -22,7 +22,7 @@ export const studyGroupService = {
   // Join a study group
   async joinStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/chats/class/${chatId}/join`, {userId: userId});
+      return await api.post(`/chats/class/${chatId}/join`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
@@ -31,7 +31,7 @@ export const studyGroupService = {
   // Leave a study group
   async leaveStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/chats/class/${chatId}/leave`, {userId: userId});
+      return await api.post(`/chats/class/${chatId}/leave`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }

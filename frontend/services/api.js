@@ -34,40 +34,31 @@ class ApiService {
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
-
-    const method = (config.method || "GET").toUpperCase();
-    if (method === "GET") {
-      let query = params;
-      if (!query && hasBody) {
-        try {
-          query =
-            typeof restOptions.body === "string"
-              ? JSON.parse(restOptions.body)
-              : restOptions.body;
-        } catch {
-          // ignore parse error
+    
+    // apply query params to URL
+    if (
+      params &&
+      typeof params === "object" &&
+      Object.keys(params).length > 0
+    ) {
+      const qs = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (Array.isArray(value)) {
+          value.forEach((v) => qs.append(key, String(v)));
+        } else if (typeof value === "object") {
+          qs.append(key, JSON.stringify(value));
+        } else {
+          qs.append(key, String(value));
         }
-      }
-      if (query && typeof query === "object" && Object.keys(query).length > 0) {
-        const qs = new URLSearchParams();
-        Object.entries(query).forEach(([key, value]) => {
-          if (value === undefined || value === null) return;
-          if (Array.isArray(value)) {
-            value.forEach((v) => qs.append(key, String(v)));
-          } else if (typeof value === "object") {
-            qs.append(key, JSON.stringify(value));
-          } else {
-            qs.append(key, String(value));
-          }
-        });
-        const sep = url.includes("?") ? "&" : "?";
-        url += sep + qs.toString();
-      }
-      delete config.body;
-    } else if (hasBody && !isFormData && typeof restOptions.body !== "string") {
-      config.body = JSON.stringify(restOptions.body);
+      });
+      const sep = url.includes("?") ? "&" : "?";
+      url += sep + qs.toString();
     }
 
+    // apply body to config
+    config.body = JSON.stringify(options?.body);
+    console.log("requesting at url: ", url, "with config: ", config);
     const response = await fetch(url, config);
 
     if (!response.ok) {
@@ -100,24 +91,30 @@ class ApiService {
   }
 
   // POST request
-  post(endpoint, data) {
+  post(endpoint, data = {}) {
     return this.request(endpoint, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data?.body,
+      params: data?.params,
     });
   }
 
   // PUT request
-  put(endpoint, data) {
+  put(endpoint, data = {}) {
     return this.request(endpoint, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: data?.body,
+      params: data?.params,
     });
   }
 
   // DELETE request
-  delete(endpoint) {
-    return this.request(endpoint, { method: "DELETE" });
+  delete(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: "DELETE",
+      params: data?.params,
+      body: data?.body,
+    });
   }
 }
 
