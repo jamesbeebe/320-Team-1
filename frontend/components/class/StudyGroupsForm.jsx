@@ -59,7 +59,7 @@ export function StudyGroupsForm (){
 
       router.push(`/class/${id}`);
     } catch (err) {
-      setError(err.message + (user === undefined) || 'Failed to create study group. Please try again.');
+      setError(err.message || 'Failed to create study group. Please try again.');
       console.error('Error creating study group: ', err);
     } finally {
       setLoading(false);
