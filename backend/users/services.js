@@ -27,7 +27,7 @@ export async function deleteUser(userId){
 }
 
 export async function getUsersWithClasses(userId){
-    const {data, error} = await supabase.from("users").select("*, user_classes(*)").not("id", "eq", userId);
+    const {data, error} = await supabase.from("users").select("*, user_classes(class_id)").not("id", "eq", userId);
     if(error){
         throw new Error(error.message);
     }

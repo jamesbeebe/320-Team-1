@@ -6,7 +6,7 @@ export const authService = {
     try {
       const data = await api.get("/auth/me");
       console.log("the data from isAuthenticated",data);
-      return data.user.user_metadata;
+      return {id: data.user.id, ...data.user.user_metadata};
     } catch (error) {
       console.log("Authentication check failed:", error);
       throw error;

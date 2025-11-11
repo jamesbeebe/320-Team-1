@@ -13,7 +13,7 @@ export const userService = {
   },
   async getUserWithClasses(userId){
     try {
-      const data = await api.get(`/users/${userId}/classes`);
+      const data = await api.get(`/users/classes/${userId}`);
       return data;
     } catch (error) {
       console.error("Error fetching user with classes:", error);
@@ -22,7 +22,7 @@ export const userService = {
   },
   async getUsersWithClasses(userId){
     try{
-      const data = await api.get(`/users/classes`, { params: { userId } });
+      const data = await api.get(`/users/classes/not/${userId}`);
       return data;
     } catch (error) {
       console.error("Error fetching users with classes:", error);

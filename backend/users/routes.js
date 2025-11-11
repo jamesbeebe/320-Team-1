@@ -1,6 +1,6 @@
 // this contains all the user routes
 import express from "express";
-import { getUser, deleteUser, getSpecificUser} from "./services.js";
+import { getUser, deleteUser, getSpecificUser, getUserWithClasses, getUsersWithClasses} from "./services.js";
 export const userRouter = express.Router();
 userRouter.get("/", async (req, res) => {
     try {
@@ -18,22 +18,6 @@ userRouter.get("/", async (req, res) => {
     }
 });
 
-userRouter.get("/:userId", async (req, res) => {
-    try {
-        const userId = req.params.userId;
-        const user = await getSpecificUser(userId);
-
-        if(!user){
-            return res.status(404).json({error: "No user found"});
-        }
-
-        return res.status(200).json(user);
-    } 
-    catch (error) {
-        console.error("Error fetching user:", error);
-        return res.status(500).json({error: "Internal Server Error"});
-    }
-});
 
 userRouter.delete("/:userId", async (req, res) => {
     try{
@@ -52,9 +36,9 @@ userRouter.delete("/:userId", async (req, res) => {
     }
 });
 
-userRouter.get("/classes", async (req, res) => {
+userRouter.get("/classes/not/:userId", async (req, res) => {
     try {
-        const userId = req.query.userId;
+        const userId = req.params.userId;
         const usersWithClasses = await getUsersWithClasses(userId);
 
         if(usersWithClasses.length === 0){
@@ -64,12 +48,29 @@ userRouter.get("/classes", async (req, res) => {
         return res.status(200).json(usersWithClasses);
     } 
     catch (error) {
-        console.error("Error fetching users with classes:", error);
+        console.error("Error fetching users with classes:", error.message);
         return res.status(500).json({error: "Internal Server Error"});
     }
 });
 
-userRouter.get("/:userId/classes", async (req, res) => {
+userRouter.get("/:userId", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await getSpecificUser(userId);
+
+        if(!user){
+            return res.status(404).json({error: "No user found"});
+        }
+
+        return res.status(200).json(user);
+    } 
+    catch (error) {
+        console.error("Error fetching user:", error.message);
+        return res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+userRouter.get("/classes/:userId", async (req, res) => {
     try {
         const userId = req.params.userId;
         const user = await getUserWithClasses(userId);  
@@ -80,7 +81,7 @@ userRouter.get("/:userId/classes", async (req, res) => {
         return res.status(200).json(user);
     } 
     catch (error) {
-        console.error("Error fetching user with classes:", error);
+        console.error("Error fetching user with classes:", error.message);
         return res.status(500).json({error: "Internal Server Error"});
     }
 });
