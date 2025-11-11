@@ -25,10 +25,6 @@ export default function Classmates() {
       }
     }
 
-    fetchOwnUser();
-  }, [user]);
-
-  useEffect(() => {
     async function fetchClassmates() {
       try {
         const fetchedClassmates = await userService.getUsersWithClasses(
@@ -56,7 +52,9 @@ export default function Classmates() {
       }
     }
 
+    fetchOwnUser();
     fetchClassmates();
+    
   }, [userData]);
 
   const getCompatibilityColor = (score) => {
