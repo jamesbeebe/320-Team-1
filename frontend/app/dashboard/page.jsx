@@ -57,7 +57,7 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {mockUserClasses.map((cls) => (
             <Link key={cls.id} href={`/class/${cls.id}`}>
-              <Card className="p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
+              <Card className="p-6 hover:shadow-xl transition-shadow duration-200 cursor-pointer h-full border-width-1 border-gray-300">
                 <div className="flex flex-col h-full">
                   <div className="mb-4">
                     <h2 className="text-xl font-bold text-[#EF5350] mb-1">{cls.code}</h2>

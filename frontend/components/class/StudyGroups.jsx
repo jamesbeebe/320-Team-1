@@ -65,7 +65,7 @@ export default function StudyGroups() {
 
       <div className="space-y-4">
         {studyGroups.map((group) => (
-          <Card key={group.id} className="p-6">
+          <Card key={group.id} className="p-6 border-width-1 border-gray-300">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 <h3 className="text-xl font-semibold text-gray-900 mb-3">

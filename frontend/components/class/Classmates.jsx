@@ -73,7 +73,7 @@ export default function Classmates() {
   return (
     <div className="space-y-4">
       {loading ? <p className="text-lg font-semibold text-gray-900">Loading classmates...</p> : classmates.map((classmate) => (
-        <Card key={classmate.id} className="p-6">
+        <Card key={classmate.id} className="p-6 border-width-1 border-gray-300">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div>
