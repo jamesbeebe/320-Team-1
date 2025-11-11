@@ -80,6 +80,56 @@ exception
 end;
 $$ language plpgsql;
 
-1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0
+create type chat_with_user_info as (
+  chat_id uuid,
+  chat_name text,
+  class_id int4,
+  expires_at timestamptz,
+  enrolled_in boolean
+);
 
-f3c4b727-98a5-4a07-9384-859a02ef6f9b
+create or replace function get_all_chats_for_class(
+  classId int4,
+  userId uuid,
+  date timestamp
+)
+returns setof chat_with_user_info
+language sql
+stable
+as $$
+  select
+    c.id as chat_id,
+    c.name as chat_name,
+    c.class_id,
+    c.expires_at,
+    (u.user_id is not null) as enrolled_in
+  from chats c
+  left join user_chats u
+    on u.chat_id = c.id and u.user_id = userId
+  where c.class_id = classId and c.expires_at > date;
+$$;
+
+
+create or replace function public.get_all_chats_for_user (
+  _user_id uuid
+) 
+RETURNS SETOF public.chats 
+LANGUAGE sql STABLE 
+as $$
+SELECT DISTINCT c.*
+FROM public.chats c
+WHERE c.id IN (SELECT chat_id FROM public.user_chats WHERE user_id = _user_id );
+$$;
+
+drop function if exists public.get_all_chats_for_class;
+
+
+select
+  n.nspname as schema,
+  p.proname as function_name,
+  pg_catalog.pg_get_function_identity_arguments(p.oid) as arguments,
+  pg_catalog.pg_get_function_result(p.oid) as result_type
+from pg_catalog.pg_proc p
+  left join pg_catalog.pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+order by p.proname;
