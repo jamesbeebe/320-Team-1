@@ -65,10 +65,7 @@ class ApiService {
     }
     // Check content type to determine how to parse response
     const contentType = response.headers.get("content-type");
-    // const isJson = contentType && contentType.includes("application/json");
-    // if (isJson) {
-    //   return await response.json();
-    // }
+
     return await response.json();
   }
 

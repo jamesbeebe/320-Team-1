@@ -111,6 +111,7 @@ export async function leaveChat(chatId, userId) {
     .from("user_chats")
     .delete()
     .eq("chat_id", chatId)
+    .eq("user_id", userId)
     .select()
     .single();
   return { data, error };
