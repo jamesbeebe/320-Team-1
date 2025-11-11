@@ -1,13 +1,16 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Card from '@/components/ui/Card';
 import Header from '@/components/layout/Header';
+import { useAuth } from '@/context/AuthContext';
 
 // Mock data - will be replaced with backend API
 const mockUserClasses = [
   {
-    id: 1,
+    id: 27,
     code: 'CS 311',
     name: 'Intro to Algorithms',
     semester: 'Fall 2025',
@@ -33,6 +36,18 @@ const mockUserClasses = [
 ];
 
 export default function DashboardPage() {
+  const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login');
+    }
+  }, [loading, user, router]);
+
+  if (loading) return null;
+  if (!user) return null;
+
   return (
     <>
       <Header />

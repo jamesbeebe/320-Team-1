@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import Card from '@/components/ui/Card';
+import IcsFileUpload from '@/components/ui/IcsFileUpload';
 
 // Mock data - will be replaced with backend API
 const mockClasses = [
@@ -96,6 +97,7 @@ export default function OnboardingPage() {
           </p>
         )}
       </Card>
+      <IcsFileUpload/>
     </div>
   );
 }

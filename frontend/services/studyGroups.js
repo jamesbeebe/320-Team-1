@@ -4,7 +4,7 @@ export const studyGroupService = {
   // Get study groups for a class
   async getStudyGroups(classId) {
     try {
-      return await api.get(`/study-groups?classId=${classId}`);
+      return await api.get(`/chats/class/${classId}/study-group`);
     } catch (error) {
       throw error;
     }
@@ -13,7 +13,7 @@ export const studyGroupService = {
   // Create a study group
   async createStudyGroup(classId, groupData) {
     try {
-      return await api.post('/study-groups', { classId, ...groupData });
+      return await api.post(`/chats/class/${classId}/`, {...groupData, type: "study-group"});
     } catch (error) {
       throw error;
     }
