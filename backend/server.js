@@ -54,5 +54,4 @@ app.use("/api/messages", messageRouter);
 app.use("/api/users", userRouter)
 app.use("/api/upload", icsRouter);
 app.use("/api/chats", chatRouter)
-app.use("/api/users", userRouter);
 app.use("/api/userChats", userChatsRouter);

@@ -26,3 +26,18 @@ export async function deleteUser(userId){
     return data[0];
 }
 
+export async function getUsersWithClasses(userId){
+    const {data, error} = await supabase.from("users").select("*, user_classes(*)").not("id", "eq", userId);
+    if(error){
+        throw new Error(error.message);
+    }
+    return data;
+}
+
+export async function getUserWithClasses(userId){
+    const {data, error} = await supabase.from("users").select("*, user_classes(*)").eq("id", userId).single();
+    if(error){
+        throw new Error(error.message);
+    }
+    return data;
+}

@@ -51,3 +51,36 @@ userRouter.delete("/:userId", async (req, res) => {
         return res.status(500).json({error: "Internal Server Error"});
     }
 });
+
+userRouter.get("/classes", async (req, res) => {
+    try {
+        const userId = req.query.userId;
+        const usersWithClasses = await getUsersWithClasses(userId);
+
+        if(usersWithClasses.length === 0){
+            return res.status(404).json({error: "No users with classes found"});
+        }
+
+        return res.status(200).json(usersWithClasses);
+    } 
+    catch (error) {
+        console.error("Error fetching users with classes:", error);
+        return res.status(500).json({error: "Internal Server Error"});
+    }
+});
+
+userRouter.get("/:userId/classes", async (req, res) => {
+    try {
+        const userId = req.params.userId;
+        const user = await getUserWithClasses(userId);  
+        if(!user){
+            return res.status(404).json({error: "No user found"});
+        }
+
+        return res.status(200).json(user);
+    } 
+    catch (error) {
+        console.error("Error fetching user with classes:", error);
+        return res.status(500).json({error: "Internal Server Error"});
+    }
+});
