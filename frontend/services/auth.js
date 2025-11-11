@@ -5,7 +5,7 @@ export const authService = {
   async isAuthenticated() {
     try {
       const data = await api.get("/auth/me");
-      return { id: data.user.id, ...data.user.user_metadata };
+      return {id: data.user.id, ...data.user.user_metadata};
     } catch (error) {
       throw error;
     }
