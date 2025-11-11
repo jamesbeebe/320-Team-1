@@ -15,16 +15,18 @@ class ApiService {
 
   // Helper method for making requests
   async request(endpoint, options = {}) {
-    const url = `${this.baseURL}${endpoint}`;
-    const isFormData = options.body instanceof FormData;
-    
+    let url = `${this.baseURL}${endpoint}`;
+    const { params, ...restOptions } = options;
+    const hasBody = !!restOptions.body;
+    const isFormData = hasBody && restOptions.body instanceof FormData;
+
     const config = {
       headers: {
-        ...(!isFormData && { "Content-Type": "application/json" }),
-        ...options.headers,
+        ...(hasBody && !isFormData && { "Content-Type": "application/json" }),
+        ...restOptions.headers,
       },
       credentials: "include", // Include cookies in the request
-      ...options,
+      ...restOptions,
     };
 
     // Add auth token if it exists (from context/memory)
@@ -33,20 +35,38 @@ class ApiService {
       config.headers["Authorization"] = `Bearer ${token}`;
     }
 
+    // apply query params to URL
+    if (
+      params &&
+      typeof params === "object" &&
+      Object.keys(params).length > 0
+    ) {
+      const qs = new URLSearchParams();
+      Object.entries(params).forEach(([key, value]) => {
+        if (value === undefined || value === null) return;
+        if (Array.isArray(value)) {
+          value.forEach((v) => qs.append(key, String(v)));
+        } else if (typeof value === "object") {
+          qs.append(key, JSON.stringify(value));
+        } else {
+          qs.append(key, String(value));
+        }
+      });
+      const sep = url.includes("?") ? "&" : "?";
+      url += sep + qs.toString();
+    }
+
+    // apply body to config
+    config.body = JSON.stringify(options?.body);
     const response = await fetch(url, config);
 
     if (!response.ok) {
-      console.log(`HTTP ${response.status}: ${response.statusText}`);
       throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
     // Check content type to determine how to parse response
     const contentType = response.headers.get("content-type");
-    const isJson = contentType && contentType.includes("application/json");
 
-
-
-    const data = await response.json();
-    return data;
+    return await response.json();
   }
 
   getToken() {
@@ -57,29 +77,39 @@ class ApiService {
   }
 
   // GET request
-  get(endpoint) {
-    return this.request(endpoint, { method: "GET" });
+  get(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: "GET",
+      params: data?.params,
+      body: data?.body,
+    });
   }
 
   // POST request
-  post(endpoint, data) {
+  post(endpoint, data = {}) {
     return this.request(endpoint, {
       method: "POST",
-      body: JSON.stringify(data),
+      body: data?.body,
+      params: data?.params,
     });
   }
 
   // PUT request
-  put(endpoint, data) {
+  put(endpoint, data = {}) {
     return this.request(endpoint, {
       method: "PUT",
-      body: JSON.stringify(data),
+      body: data?.body,
+      params: data?.params,
     });
   }
 
   // DELETE request
-  delete(endpoint) {
-    return this.request(endpoint, { method: "DELETE" });
+  delete(endpoint, data = {}) {
+    return this.request(endpoint, {
+      method: "DELETE",
+      params: data?.params,
+      body: data?.body,
+    });
   }
 }
 

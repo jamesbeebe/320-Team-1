@@ -23,7 +23,6 @@ export function AuthProvider({ children }) {
     authService
       .isAuthenticated()
       .then((user) => {
-        console.log("the user from isAuthenticated", user);
         setUser(user);
         setLoading(false);
         router.push("/dashboard");
@@ -39,7 +38,7 @@ export function AuthProvider({ children }) {
     if (data.accessToken) {
       setAccessToken(data.accessToken);
     }
-    setUser(data.user.user_metadata);
+    setUser({id: data.user.id, ...data.user.user_metadata});
     router.push("/dashboard");
   };
 

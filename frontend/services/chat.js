@@ -10,6 +10,15 @@ export const chatService = {
     }
   },
 
+  async getChannelsForUser(userId){
+    try{
+      return await api.get(`/chats/class/all/${userId}`)
+
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // Get messages for a channel
   async getMessages(channelId, startDate = null, endDate = null) {
     try {

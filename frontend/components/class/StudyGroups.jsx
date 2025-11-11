@@ -6,24 +6,28 @@ import { useParams } from "next/navigation";
 import { studyGroupService } from "@/services";
 import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
 
 export default function StudyGroups() {
   const { id } = useParams();
   const [studyGroups, setStudyGroups] = useState([]);
   const [error, setError] = useState("");
+  const { user, loading } = useAuth();
 
   useEffect(() => {
     const getGroups = async () => {
+      if (loading) return;
       try {
-        const res = await studyGroupService.getStudyGroups(id);
+        const res = await studyGroupService.getStudyGroups(id, user.id);
         const dataMap = res.map((group) => {
           const readableDate = new Date(group.expires_at).toLocaleString();
           const splitted = readableDate.split(", ");
           return {
-            id: group.id,
-            name: group.name,
+            id: group.chat_id,
+            name: group.chat_name,
             date: splitted[0],
             time: splitted[1].replace(":00", ""),
+            enrolled_in: group.enrolled_in,
           };
         });
         setStudyGroups(dataMap);
@@ -33,7 +37,35 @@ export default function StudyGroups() {
       }
     };
     getGroups();
-  }, []);
+  }, [user, loading]);
+
+  const handleJoinStudyGroup = async (chatId) => {
+    try {
+      await studyGroupService.joinStudyGroup(user.id, chatId);
+      setStudyGroups(
+        studyGroups.map((group) =>
+          group.id === chatId ? { ...group, enrolled_in: true } : group
+        )
+      );
+    } catch (error) {
+      setError(error.message);
+      console.error("Error joining study group: ", error);
+    }
+  };
+
+  const handleLeaveStudyGroup = async (chatId) => {
+    try {
+      await studyGroupService.leaveStudyGroup(user.id, chatId);
+      setStudyGroups(
+        studyGroups.map((group) =>
+          group.id === chatId ? { ...group, enrolled_in: false } : group
+        )
+      );
+    } catch (error) {
+      setError(error.message);
+      console.error("Error leaving study group: ", error);
+    }
+  };
   return (
     <div>
       <div className="mb-6">
@@ -108,8 +140,21 @@ export default function StudyGroups() {
                   </div>
                 </div>
               </div>
-
-              <Button className="ml-4">Join</Button>
+              {group.enrolled_in ? (
+                <Button
+                  className="ml-4"
+                  onClick={() => handleLeaveStudyGroup(group.id)}
+                >
+                  Leave
+                </Button>
+              ) : (
+                <Button
+                  className="ml-4"
+                  onClick={() => handleJoinStudyGroup(group.id)}
+                >
+                  Join
+                </Button>
+              )}
             </div>
           </Card>
         ))}

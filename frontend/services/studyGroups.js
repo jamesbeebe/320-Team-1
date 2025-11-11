@@ -2,9 +2,9 @@ import api from './api';
 
 export const studyGroupService = {
   // Get study groups for a class
-  async getStudyGroups(classId) {
+  async getStudyGroups(classId, userId) {   
     try {
-      return await api.get(`/chats/class/${classId}/study-group`);
+      return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
@@ -13,25 +13,25 @@ export const studyGroupService = {
   // Create a study group
   async createStudyGroup(classId, groupData) {
     try {
-      return await api.post(`/chats/class/${classId}/`, {...groupData, type: "study-group"});
+      return await api.post(`/chats/class/${classId}/`, {body: {...groupData, type: "study-group"}});
     } catch (error) {
       throw error;
     }
   },
 
   // Join a study group
-  async joinStudyGroup(groupId) {
+  async joinStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/study-groups/${groupId}/join`);
+      return await api.post(`/chats/class/${chatId}/join`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
   },
 
   // Leave a study group
-  async leaveStudyGroup(groupId) {
+  async leaveStudyGroup(userId, chatId) {
     try {
-      return await api.post(`/study-groups/${groupId}/leave`);
+      return await api.post(`/chats/class/${chatId}/leave`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }

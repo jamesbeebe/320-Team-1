@@ -1,18 +1,21 @@
 import { supabase } from "../supabase-client.js";
+import { log } from "../logs/logger.js";
 
-export async function getAllChatsForClass(classId) {
-  const { data, error } = await supabase
-    .from("chats")
-    .select(
-      `
-        id,
-        name,
-        expires_at
-        `
-    )
-    .eq("class_id", classId)
-    .gte("expires_at", new Date().toISOString());
+export async function getAllUserChats(userId) {
+  const { data, error } = await supabase.rpc("get_all_chats_for_user", {
+    _user_id: userId,
+  });
   return { data, error };
+}
+
+export async function getAllChatsForClass(classId, userId) {
+  const { data, error } = await supabase.rpc("get_all_chats_for_class", {
+    classid: classId,
+    date: new Date().toISOString(),
+    userid: userId,
+  });
+
+  return {data, error };
 }
 
 export async function getSpecificTypeForClass(classId, type) {
@@ -37,9 +40,9 @@ export async function createChatForClass(classId, name, expiresAt, userId) {
     user_id: userId,
     chat_name: name,
     class_id: classId,
-    expires_at: expiresAt
+    expires_at: expiresAt,
   });
-  return {data, error};
+  return { data, error };
 }
 
 export async function updateChatForClass(chatId, name, expiresAt) {
@@ -55,6 +58,61 @@ export async function updateChatForClass(chatId, name, expiresAt) {
         type
         `
     )
+    .single();
+  return { data, error };
+}
+
+export async function joinChat(chatId, userId) {
+  const { data: existingRows, error: existingError } = await supabase
+    .from("user_chats")
+    .select("chat_id")
+    .eq("user_id", userId)
+    .eq("chat_id", chatId)
+    .limit(1);
+
+  if (existingError) {
+    return { data: null, error: existingError };
+  }
+
+  if (existingRows && existingRows.length > 0) {
+    return { data: existingRows[0], error: null };
+  }
+
+  const { data, error } = await supabase
+    .from("user_chats")
+    .insert({ user_id: userId, chat_id: chatId })
+    .select()
+    .single();
+  return { data, error };
+}
+
+export async function leaveChat(chatId, userId) {
+  const { data: existingRows, error: existingError } = await supabase
+    .from("user_chats")
+    .select("chat_id")
+    .eq("user_id", userId)
+    .eq("chat_id", chatId)
+    .limit(1);
+
+  if (existingError) {
+    return { data: null, error: existingError };
+  }
+
+  if (!existingRows || existingRows.length === 0) {
+    return {
+      data: null,
+      error: { message: "User is not enrolled in this chat." },
+    };
+  }
+
+  const existingId = existingRows[0].id;
+
+  const { data, error } = await supabase
+    .from("user_chats")
+    .delete()
+    .eq("chat_id", chatId)
+    .eq("user_id", userId)
+    .select()
     .single();
   return { data, error };
 }
