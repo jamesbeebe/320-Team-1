@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import { userService } from "@/services/user";
 import { useAuth } from "@/context/AuthContext";
 
-export default function Classmates() {
+export default function Classmates({ classId }) {
   const [classmates, setClassmates] = useState([]);
   const [userData, setUserData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -25,11 +25,22 @@ export default function Classmates() {
       }
     }
 
+    fetchOwnUser();
+  }, [user.id]);
+
+  useEffect(() => {
+    if (!userData){
+      return;
+    }
+
     async function fetchClassmates() {
       try {
+        setLoading(true);
         const fetchedClassmates = await userService.getUsersWithClasses(
+          classId,
           user.id
         );
+
         const updated = fetchedClassmates.map((c) => {
           const classMatch = c.user_classes.filter((uc) =>
             userData.user_classes.has(uc.class_id)
@@ -43,19 +54,19 @@ export default function Classmates() {
           );
           return c;
         });
-        setClassmates(updated.sort((a, b) => b.compatibility - a.compatibility));
+
+        setClassmates(
+          updated.sort((a, b) => b.compatibility - a.compatibility)
+        );
       } catch (err) {
         console.error("Error fetching classmates:", err);
-      }
-      finally {
+      } finally {
         setLoading(false);
       }
     }
 
-    fetchOwnUser();
     fetchClassmates();
-    
-  }, [userData]);
+  }, [userData, classId]);
 
   const getCompatibilityColor = (score) => {
     if (score >= 95) return "bg-green-600";
@@ -70,35 +81,44 @@ export default function Classmates() {
 
   return (
     <div className="space-y-4">
-      {loading ? <p className="text-lg font-semibold text-gray-900">Loading classmates...</p> : classmates.map((classmate) => (
-        <Card key={classmate.id} className="p-6 border-width-1 border-gray-300">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div>
-                <h3 className="font-semibold text-gray-900">
-                  {classmate.name}
-                </h3>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2">
-                <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${getCompatibilityColor(
-                      classmate.compatibility
-                    )}`}
-                    style={{ width: `${classmate.compatibility}%` }}
-                  />
+      {loading ? (
+        <p className="text-lg font-semibold text-gray-900">
+          Loading classmates...
+        </p>
+      ) : (
+        classmates.map((classmate) => (
+          <Card
+            key={classmate.id}
+            className="p-6 border-width-1 border-gray-300"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <div>
+                  <h3 className="font-semibold text-gray-900">
+                    {classmate.name}
+                  </h3>
                 </div>
-                <span className="text-lg font-semibold text-gray-900">
-                  {classmate.compatibility}%
-                </span>
+              </div>
+
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                    <div
+                      className={`h-full ${getCompatibilityColor(
+                        classmate.compatibility
+                      )}`}
+                      style={{ width: `${classmate.compatibility}%` }}
+                    />
+                  </div>
+                  <span className="text-lg font-semibold text-gray-900">
+                    {classmate.compatibility}%
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-        </Card>
-      ))}
+          </Card>
+        ))
+      )}
     </div>
   );
 }

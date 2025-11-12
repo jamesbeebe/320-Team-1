@@ -13,16 +13,16 @@ export const userService = {
   },
   async getUserWithClasses(userId){
     try {
-      const data = await api.get(`/users/classes/${userId}`);
+      const data = await api.get(`/users/${userId}/classes`);
       return data;
     } catch (error) {
       console.error("Error fetching user with classes:", error);
       throw error;
     }
   },
-  async getUsersWithClasses(userId){
+  async getUsersWithClasses(classId, userId){
     try{
-      const data = await api.get(`/users/classes/not/${userId}`);
+      const data = await api.get(`/users/classes/${classId}/${userId}`);
       return data;
     } catch (error) {
       console.error("Error fetching users with classes:", error);

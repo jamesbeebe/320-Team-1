@@ -18,7 +18,7 @@ const mockUserClasses = [
     totalStudents: 24,
   },
   {
-    id: 2,
+    id: 28,
     code: 'MATH 241',
     name: 'Calculus III',
     semester: 'Fall 2025',

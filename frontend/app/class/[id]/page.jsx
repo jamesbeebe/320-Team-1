@@ -1,5 +1,5 @@
 'use client';
-
+import React from 'react';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/layout/Header';
@@ -23,6 +23,7 @@ const tabs = [
 
 export default function ClassDetailsPage({ params }) {
   const router = useRouter();
+  const {id} = React.use(params);
   const [activeTab, setActiveTab] = useState(tabs[0].id);
 
   const ActiveComponent = tabs.find((tab) => tab.id === activeTab)?.component || StudyGroups;
@@ -71,7 +72,7 @@ export default function ClassDetailsPage({ params }) {
 
         {/* Active Tab Content */}
         <div>
-          <ActiveComponent />
+          <ActiveComponent classId={id} />
         </div>
       </div>
     </>
