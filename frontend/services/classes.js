@@ -1,4 +1,4 @@
-import api from './api';
+import api from "./api";
 
 export const classService = {
   // Get all available classes
@@ -30,11 +30,9 @@ export const classService = {
   // Remove class from user
   async removeClass(classId, userId) {
     try {
-      return await api.delete(`/classes/drop/${classId}`, { body: { userId } });
+      return await api.post(`/classes/drop/${classId}`, { body: { userId } });
     } catch (error) {
       throw error;
     }
   },
-
 };
-

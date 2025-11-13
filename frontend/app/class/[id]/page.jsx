@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { useRouter, useParams, useSearchParams } from "next/navigation";
 import Header from "@/components/layout/Header";
+import Button from "@/components/ui/Button";
+import { useAuth } from "@/context/AuthContext";
+import { classService } from "@/services/classes";
 import StudyGroups from "@/components/class/StudyGroups";
 import Classmates from "@/components/class/Classmates";
 import ChatInterface from "@/components/class/ChatInterface";
@@ -20,6 +23,17 @@ export default function ClassDetailsPage() {
   const className = searchParams.get("name") || "";
   const classSection = searchParams.get("section") || "";
   const [activeTab, setActiveTab] = useState(tabs[0].id);
+  const { user } = useAuth();
+
+  const handleLeaveClass = async () => {
+    try {
+      await classService.removeClass(classId, user.id);
+      router.push("/dashboard");
+      router.refresh();
+    } catch (error) {
+      console.error("Error leaving class:", error);
+    }
+  };
 
   const ActiveComponent =
     tabs.find((tab) => tab.id === activeTab)?.component || StudyGroups;
@@ -53,6 +67,16 @@ export default function ClassDetailsPage() {
             <h1 className="text-3xl font-bold text-gray-900">
               {classSection} - {className}
             </h1>
+          </div>
+
+          <div className="mt-4">
+            <Button
+              variant="secondary"
+              className="text-red-600 border-red-300 hover:bg-red-50"
+              onClick={handleLeaveClass}
+            >
+              Leave class
+            </Button>
           </div>
         </div>
 

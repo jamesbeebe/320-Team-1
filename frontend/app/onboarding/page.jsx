@@ -63,7 +63,7 @@ export default function OnboardingPage() {
   };
 
   const handleContinue = () => {
-    console.log('Final enrolled classes:', currClasses);
+    
     router.push('/dashboard');
   };
 

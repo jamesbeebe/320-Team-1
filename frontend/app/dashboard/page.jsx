@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
 import Header from "@/components/layout/Header";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
@@ -15,6 +16,17 @@ export default function DashboardPage() {
 
   const router = useRouter();
   console.log(user);
+
+  const handleLeaveClass = async (e, classId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await classService.removeClass(classId, user.id);
+      setUserClasses((prev) => prev.filter((c) => c.id !== classId));
+    } catch (error) {
+      console.error("Error leaving class:", error);
+    }
+  };
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
@@ -66,6 +78,15 @@ export default function DashboardPage() {
                       {cls.subject} {cls.catalog}
                     </h2>
                     <p className="text-gray-900 font-medium"> {cls.section}</p>
+                  </div>
+                  <div className="mt-auto">
+                    <Button
+                      variant="secondary"
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      onClick={(e) => handleLeaveClass(e, cls.id)}
+                    >
+                      Leave
+                    </Button>
                   </div>
                 </div>
               </Card>

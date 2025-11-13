@@ -12,15 +12,25 @@ export async function getAllClasses(userId) {
 export async function dropClass(classId, userId) {
   const { data, error } = await supabase
     .from("user_classes")
+    .delete()
     .eq("user_id", userId)
     .eq("class_id", classId)
-    .delete();
   return { data, error };
 }
 
 export async function addClass(classId, userId) {
   const { data, error } = await supabase
     .from("user_classes")
-    .insert({ user_id: userId, class_id: classId });
+    .insert({ user_id: userId, class_id: classId })
+    .select();
+  return { data, error };
+}
+
+export async function bulkEnrollClasses(classIds, userId) {
+  const { data, error } = await supabase
+    .from("user_classes")
+    .insert(
+      classIds.map((classId) => ({ user_id: userId, class_id: classId }))
+    );
   return { data, error };
 }

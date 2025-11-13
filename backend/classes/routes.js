@@ -1,6 +1,6 @@
 import router from "express";
 import { log } from "../logs/logger.js";
-import { getAllClasses, dropClass, addClass } from "./controller.js";
+import { getAllClasses, dropClass, addClass, bulkEnrollClasses} from "./controller.js";
 export const classesRouter = router();
 
 classesRouter.get("/:userId", async (req, res) => {
@@ -31,6 +31,17 @@ classesRouter.post("/add/:classId", async (req, res) => {
   const { data, error } = await addClass(classId, userId);
   if (error) {
     log("error", `Error adding class: ${error.message}`);
+    return res.status(500).json({ error: error.message });
+  }
+  return res.status(200).json(data);
+});
+
+classesRouter.get("/bulk-enroll", async (req, res) => {
+  const { classIds } = req.body;    
+  const { userId } = req.body;
+  const { data, error } = await bulkEnrollClasses(classIds, userId);
+  if (error) {
+    log("error", `Error bulk enrolling classes: ${error.message}`);
     return res.status(500).json({ error: error.message });
   }
   return res.status(200).json(data);
