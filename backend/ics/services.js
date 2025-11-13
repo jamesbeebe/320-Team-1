@@ -12,11 +12,15 @@ export async function processICSFile(fileBuffer) {
     // Parse the ICS content directly from memory
     const parsedData = parseIcs(icsContent);
 
-    const { data: classIds, error } = await findMatchingClassIds(icsContent);
+    const { data: classRows, error } = await findMatchingClassIds(icsContent);
     if (error) {
       log("error", `processICSFile: Supabase query error: ${error.message}`);
       throw error;
     }
+    const classIds = (classRows ?? [])
+      .map((row) => (row && typeof row === "object" ? row.id : row))
+      .filter((v) => Number.isInteger(Number(v)))
+      .map((v) => Number(v));
     log(
       "info",
       `processICSFile: Supabase returned ${classIds?.length ?? 0} class ids`

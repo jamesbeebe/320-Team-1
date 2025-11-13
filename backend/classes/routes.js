@@ -1,6 +1,11 @@
 import router from "express";
 import { log } from "../logs/logger.js";
-import { getAllClasses, dropClass, addClass, bulkEnrollClasses} from "./controller.js";
+import {
+  getAllClasses,
+  dropClass,
+  addClass,
+  bulkEnrollClasses,
+} from "./controller.js";
 export const classesRouter = router();
 
 classesRouter.get("/:userId", async (req, res) => {
@@ -36,9 +41,15 @@ classesRouter.post("/add/:classId", async (req, res) => {
   return res.status(200).json(data);
 });
 
-classesRouter.get("/bulk-enroll", async (req, res) => {
-  const { classIds } = req.body;    
-  const { userId } = req.body;
+classesRouter.post("/bulk-enroll", async (req, res) => {
+  const { classIds, userId } = req.body;
+  log("info", `Bulk enrolling classes for user ${JSON.stringify(userId)}: ${JSON.stringify(classIds)}`);
+  if (!Array.isArray(classIds) || !userId) {
+    log("error", "Invalid request body for bulk-enroll");
+    return res
+      .status(400)
+      .json({ error: "classIds (array) and userId are required" });
+  }
   const { data, error } = await bulkEnrollClasses(classIds, userId);
   if (error) {
     log("error", `Error bulk enrolling classes: ${error.message}`);

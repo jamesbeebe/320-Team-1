@@ -14,7 +14,7 @@ export async function dropClass(classId, userId) {
     .from("user_classes")
     .delete()
     .eq("user_id", userId)
-    .eq("class_id", classId)
+    .eq("class_id", classId);
   return { data, error };
 }
 
@@ -27,10 +27,11 @@ export async function addClass(classId, userId) {
 }
 
 export async function bulkEnrollClasses(classIds, userId) {
-  const { data, error } = await supabase
-    .from("user_classes")
-    .insert(
-      classIds.map((classId) => ({ user_id: userId, class_id: classId }))
-    );
+  const { data, error } = await supabase.from("user_classes").insert(
+    classIds.map((classId) => ({
+      user_id: userId,
+      class_id: parseInt(classId, 10),
+    }))
+  );
   return { data, error };
 }
