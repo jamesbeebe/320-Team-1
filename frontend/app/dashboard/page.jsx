@@ -41,7 +41,6 @@ export default function DashboardPage() {
   if (loading) return null;
   if (!user) return null;
 
-  // {id: 27, course_title: 'Individual Taxation (HnrsInd)', subject: 'ACCOUNTG', catalog: 'HI371', section: '01'}
   return (
     <>
       <Header />
@@ -50,7 +49,16 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {userClasses.map((cls) => (
-            <Link key={cls.id} href={`/class/${cls.id}`}>
+            <Link
+              key={cls.id}
+              href={{
+                pathname: `/class/${cls.id}`,
+                query: {
+                  name: `${cls.subject} ${cls.catalog}`,
+                  section: cls.section,
+                },
+              }}
+            >
               <Card className="p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
                 <div className="flex flex-col h-full">
                   <div className="mb-4">
