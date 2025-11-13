@@ -5,6 +5,7 @@ export const classesRouter = router();
 
 classesRouter.get("/:userId", async (req, res) => {
   const { userId } = req.params;
+  log("info", `Getting all classes for user ${userId}`);
   const { data, error } = await getAllClasses(userId);
   if (error) {
     log("error", `Error getting all classes: ${error.message}`);

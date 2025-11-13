@@ -60,6 +60,7 @@ class ApiService {
     config.body = isFormData
       ? restOptions.body
       : (hasBody ? JSON.stringify(restOptions.body) : undefined);
+    console.log("making request to -->", url);
     const response = await fetch(url, config);
 
     if (!response.ok) {
