@@ -57,7 +57,9 @@ class ApiService {
     }
 
     // apply body to config
-    config.body = JSON.stringify(options?.body);
+    config.body = isFormData
+      ? restOptions.body
+      : (hasBody ? JSON.stringify(restOptions.body) : undefined);
     const response = await fetch(url, config);
 
     if (!response.ok) {

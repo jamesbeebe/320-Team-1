@@ -1,25 +1,35 @@
-import fs from 'fs';
-import path from 'path';
 import { parseIcs, findMatchingClassIds } from "../ics_parser.js";
+import { log } from "../logs/logger.js";
 
 export async function processICSFile(fileBuffer) {
-    // Save file temporarily since parseIcs expects a file path
-    const tempDir = path.join(process.cwd(), 'temp');
-    if (!fs.existsSync(tempDir)) {
-        fs.mkdirSync(tempDir);
+  const bufferSize = fileBuffer?.length ?? 0;
+  log("info", `processICSFile: starting with buffer size=${bufferSize} bytes`);
+  const icsContent = fileBuffer.toString("utf8");
+  const hasCalendarHeader = icsContent.includes("BEGIN:VCALENDAR");
+  log("info", `processICSFile: contains BEGIN:VCALENDAR=${hasCalendarHeader}`);
+
+  try {
+    // Parse the ICS content directly from memory
+    const parsedData = parseIcs(icsContent);
+
+    const { data: classIds, error } = await findMatchingClassIds(icsContent);
+    if (error) {
+      log("error", `processICSFile: Supabase query error: ${error.message}`);
+      throw error;
     }
-    
-    const tempFilePath = path.join(tempDir, `upload-${Date.now()}.ics`);
-    fs.writeFileSync(tempFilePath, fileBuffer);
-    
-    try {
-        // Parse the ICS file
-        const parsedData = parseIcs(tempFilePath);
-        const classIds = await findMatchingClassIds(tempFilePath);
-        
-        return { parsedData, classIds };
-    } finally {
-        // Clean up temp file
-        fs.unlinkSync(tempFilePath);
-    }
+    log(
+      "info",
+      `processICSFile: Supabase returned ${classIds?.length ?? 0} class ids`
+    );
+    return { parsedData, classIds };
+  } catch (err) {
+    const errMsg =
+      err && err.stack
+        ? err.stack
+        : err && err.message
+        ? err.message
+        : String(err);
+    log("error", `processICSFile: error=${errMsg}`);
+    throw err;
+  }
 }
