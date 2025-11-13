@@ -66,7 +66,7 @@ export default function Classmates({ classId }) {
     }
 
     fetchClassmates();
-  }, [userData, classId]);
+  }, [userData]);
 
   const getCompatibilityColor = (score) => {
     if (score >= 95) return "bg-green-600";
