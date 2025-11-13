@@ -4,7 +4,7 @@ import Card from './Card';
 import Input from './Input';
 import { uploadICSFile } from '../../services/ics'; // Import the upload function
 
-export default function IcsFileUpload({ onFileSelect }) {
+export default function IcsFileUpload({ onFileSelect, onFileUpload}) {
   const [fileName, setFileName] = useState('');
 
   const handleFileChange = async (e) => {
@@ -16,7 +16,10 @@ export default function IcsFileUpload({ onFileSelect }) {
         try {
           const data = await uploadICSFile(file);
           console.log('File uploaded successfully:', data);
-        } catch (error) {
+          if (onFileUpload) onFileUpload(data);
+
+        } 
+        catch (error) {
           console.error('Error uploading file:', error);
           alert('Failed to upload file');
         }
