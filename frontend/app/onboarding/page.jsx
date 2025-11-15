@@ -129,7 +129,6 @@ export default function OnboardingPage() {
                   </div>
                   <Button
                     onClick={() => handleAddClass(cls)}
-                    className="px-6 bg-[#FFCDD2] hover:bg-[#EF9A9A] text-gray-700"
                   >
                     Add
                   </Button>
@@ -175,7 +174,6 @@ export default function OnboardingPage() {
                   </div>
                   <Button
                     onClick={() => handleRemoveClass(cls.classId)}
-                    className="px-6 bg-[#FFCDD2] hover:bg-[#EF9A9A] text-gray-700"
                   >
                     Remove
                   </Button>
@@ -192,14 +190,8 @@ export default function OnboardingPage() {
       <div className="w-full max-w-7xl mx-auto mt-10">
         <Button
           onClick={handleContinue}
-          disabled={currClasses.length === 0}
-          className={`w-full ${
-            currClasses.length > 0
-              ? "bg-[#FFCDD2] hover:bg-[#EF9A9A]"
-              : "bg-gray-200 cursor-not-allowed"
-          } text-gray-700 text-lg py-4 transition-colors`}
-        >
-          Enroll in Classes
+          className={`w-full ${Button.className} text-gray-700 text-lg py-4 transition-colors`}>
+          Save and Go to Dashboard
         </Button>
 
         {currClasses.length > 0 && (
