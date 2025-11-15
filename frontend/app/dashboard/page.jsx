@@ -1,49 +1,54 @@
-'use client';
+"use client";
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import Card from '@/components/ui/Card';
-import Header from '@/components/layout/Header';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Link from "next/link";
+import Card from "@/components/ui/Card";
+import Button from "@/components/ui/Button";
+import Header from "@/components/layout/Header";
+import { useAuth } from "@/context/AuthContext";
+import { classService } from "@/services/classes";
 
-// Mock data - will be replaced with backend API
-const mockUserClasses = [
-  {
-    id: 27,
-    code: 'CS 311',
-    name: 'Intro to Algorithms',
-    semester: 'Fall 2025',
-    students: ['AB', 'CD', 'EF', 'GH'],
-    totalStudents: 24,
-  },
-  {
-    id: 2,
-    code: 'MATH 241',
-    name: 'Calculus III',
-    semester: 'Fall 2025',
-    students: ['KL', 'MN', 'OP'],
-    totalStudents: 18,
-  },
-  {
-    id: 3,
-    code: 'PHYS 211',
-    name: 'University Physics',
-    semester: 'Fall 2025',
-    students: ['QR', 'ST', 'UV', 'WX'],
-    totalStudents: 32,
-  },
-];
-
+// Mock data - will be replaced with backend API`
 export default function DashboardPage() {
   const { user, loading } = useAuth();
+  const [userClasses, setUserClasses] = useState([]);
+
   const router = useRouter();
-  console.log(user)
+  console.log(user);
+
+  const handleLeaveClass = async (e, classId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    try {
+      await classService.removeClass(classId, user.id);
+      setUserClasses((prev) => prev.filter((c) => c.id !== classId));
+    } catch (error) {
+      console.error("Error leaving class:", error);
+    }
+  };
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login');
+      router.push("/login");
     }
   }, [loading, user, router]);
+
+  useEffect(() => {
+    if (!loading) {
+      const fetchUserClasses = async () => {
+        try {
+          const data = await classService.getAllClasses(user.id);
+          console.log("user classes ->", data);
+          setUserClasses(data);
+        } catch (error) {
+          console.error("Error fetching user classes:", error);
+        }
+      };
+      if (user) {
+        fetchUserClasses();
+      }
+    }
+  }, [loading]);
 
   if (loading) return null;
   if (!user) return null;
@@ -55,32 +60,33 @@ export default function DashboardPage() {
         <h1 className="text-3xl font-bold text-gray-900 mb-8">My Classes</h1>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {mockUserClasses.map((cls) => (
-            <Link key={cls.id} href={`/class/${cls.id}`}>
+          {userClasses.map((cls) => (
+            <Link
+              key={cls.id}
+              href={{
+                pathname: `/class/${cls.id}`,
+                query: {
+                  name: `${cls.subject} ${cls.catalog}`,
+                  section: cls.section,
+                },
+              }}
+            >
               <Card className="p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
                 <div className="flex flex-col h-full">
                   <div className="mb-4">
-                    <h2 className="text-xl font-bold text-[#EF5350] mb-1">{cls.code}</h2>
-                    <p className="text-gray-900 font-medium">{cls.name}</p>
-                    <p className="text-sm text-gray-500 mt-1">{cls.semester}</p>
+                    <h2 className="text-xl font-bold text-[#EF5350] mb-1">
+                      {cls.subject} {cls.catalog}
+                    </h2>
+                    <p className="text-gray-900 font-medium"> {cls.section}</p>
                   </div>
-
                   <div className="mt-auto">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex -space-x-2">
-                        {cls.students.slice(0, 4).map((student, idx) => (
-                          <div
-                            key={idx}
-                            className="w-8 h-8 rounded-full bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-semibold text-gray-700"
-                          >
-                            {student}
-                          </div>
-                        ))}
-                      </div>
-                      {cls.totalStudents > 4 && (
-                        <span className="text-sm text-gray-600">+{cls.totalStudents - 4} more</span>
-                      )}
-                    </div>
+                    <Button
+                      variant="secondary"
+                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      onClick={(e) => handleLeaveClass(e, cls.id)}
+                    >
+                      Leave
+                    </Button>
                   </div>
                 </div>
               </Card>
@@ -115,4 +121,3 @@ export default function DashboardPage() {
     </>
   );
 }
-

@@ -1,26 +1,37 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Button from '@/components/ui/Button';
-import Card from '@/components/ui/Card';
-import IcsFileUpload from '@/components/ui/IcsFileUpload';
-import { useAuth } from '@/context/AuthContext';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import IcsFileUpload from "@/components/ui/IcsFileUpload";
+import { useAuth } from "@/context/AuthContext";
+import { classService } from "@/services/classes";
 
 // Mock class data — replace with real backend data later
 const mockClasses = [
-  { id: 1, code: 'CS 311', name: 'Intro to Algorithms', professor: 'Dr. Smith' },
-  { id: 2, code: 'MATH 241', name: 'Calculus III', professor: 'Dr. Johnson' },
-  { id: 3, code: 'PHYS 211', name: 'University Physics', professor: 'Dr. Williams' },
-  { id: 4, code: 'CS 225', name: 'Data Structures', professor: 'Dr. Brown' },
-  { id: 5, code: 'ECE 220', name: 'Computer Systems', professor: 'Dr. Davis' },
+  {
+    id: 1,
+    code: "CS 311",
+    name: "Intro to Algorithms",
+    professor: "Dr. Smith",
+  },
+  { id: 2, code: "MATH 241", name: "Calculus III", professor: "Dr. Johnson" },
+  {
+    id: 3,
+    code: "PHYS 211",
+    name: "University Physics",
+    professor: "Dr. Williams",
+  },
+  { id: 4, code: "CS 225", name: "Data Structures", professor: "Dr. Brown" },
+  { id: 5, code: "ECE 220", name: "Computer Systems", professor: "Dr. Davis" },
 ];
 
 export default function OnboardingPage() {
   const router = useRouter();
   const { user, loading } = useAuth();
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState("");
   const [currClasses, setCurrClasses] = useState([]);
 
   // Filter available classes for manual search
@@ -62,16 +73,24 @@ export default function OnboardingPage() {
     });
   };
 
-  const handleContinue = () => {
-    console.log('Final enrolled classes:', currClasses);
-    router.push('/dashboard');
+  const handleContinue = async () => {
+    if (loading || !user) return;
+    const classIds = currClasses.map((c) => c.classId);
+    try {
+      await classService.bulkEnroll(classIds, user.id);
+      router.push("/dashboard");
+    } catch (e) {
+      console.error("Bulk enroll failed", e);
+    }
   };
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 px-6 py-10">
       <div className="flex flex-col md:flex-row justify-center items-start gap-8 w-full max-w-7xl mx-auto">
         <Card className="w-full md:w-1/3 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Add Classes Manually</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            Add Classes Manually
+          </h1>
           <div className="relative mb-6">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
               <svg
@@ -118,7 +137,7 @@ export default function OnboardingPage() {
               ))
             ) : (
               <p className="text-center text-gray-500 py-8">
-                {searchQuery ? 'No classes found' : 'Start typing to search'}
+                {searchQuery ? "No classes found" : "Start typing to search"}
               </p>
             )}
           </div>
@@ -127,7 +146,9 @@ export default function OnboardingPage() {
           <IcsFileUpload onFileUpload={handleIcsUpload} />
         </div>
         <Card className="w-full md:w-1/3 p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-6">Current Added Classes</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-6">
+            Current Added Classes
+          </h1>
 
           <div className="space-y-3 max-h-[28rem] overflow-y-auto">
             {currClasses.length > 0 ? (
@@ -140,12 +161,16 @@ export default function OnboardingPage() {
                     <h3 className="font-semibold text-gray-900">
                       {cls.subject} {cls.catalog}
                     </h3>
-                    {cls.name && <p className="text-sm text-gray-600">{cls.name}</p>}
+                    {cls.name && (
+                      <p className="text-sm text-gray-600">{cls.name}</p>
+                    )}
                     {cls.professor && (
                       <p className="text-sm text-gray-500">{cls.professor}</p>
                     )}
                     {cls.section && (
-                      <p className="text-sm text-gray-500">Section {cls.section}</p>
+                      <p className="text-sm text-gray-500">
+                        Section {cls.section}
+                      </p>
                     )}
                   </div>
                   <Button
@@ -170,8 +195,8 @@ export default function OnboardingPage() {
           disabled={currClasses.length === 0}
           className={`w-full ${
             currClasses.length > 0
-              ? 'bg-[#FFCDD2] hover:bg-[#EF9A9A]'
-              : 'bg-gray-200 cursor-not-allowed'
+              ? "bg-[#FFCDD2] hover:bg-[#EF9A9A]"
+              : "bg-gray-200 cursor-not-allowed"
           } text-gray-700 text-lg py-4 transition-colors`}
         >
           Enroll in Classes
@@ -179,10 +204,11 @@ export default function OnboardingPage() {
 
         {currClasses.length > 0 && (
           <p className="text-center text-sm text-gray-600 mt-3">
-            {currClasses.length} {currClasses.length === 1 ? 'class' : 'classes'} added
+            {currClasses.length}{" "}
+            {currClasses.length === 1 ? "class" : "classes"} added
           </p>
         )}
       </div>
     </div>
-  )
+  );
 }
