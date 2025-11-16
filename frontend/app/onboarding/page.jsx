@@ -7,13 +7,12 @@ import Card from "@/components/ui/Card";
 import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
-import { allClassService } from "@/services/allClasses";
 
 export default function OnboardingPage() {
   useEffect(() => {
     const fetchClasses = async () => {
       try {
-        const classes = await allClassService.getListOfClasses();
+        const classes = await classService.getListOfClasses();
         setAllClasses(classes || []);
       } catch (e) {
         console.error("Can't access list of classes", e);
@@ -38,7 +37,7 @@ export default function OnboardingPage() {
         cls.course_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()))
   );
-
+  console.log("There are " + filteredClasses.length + " classes")
   const handleAddClass = (cls) => {
     const newClass = {
       id: cls.id,

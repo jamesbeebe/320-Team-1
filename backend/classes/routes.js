@@ -9,7 +9,7 @@ import {
 } from "./controller.js";
 export const classesRouter = router();
 
-classesRouter.get("/", async (req, res) => {
+classesRouter.get("/list-classes", async (req, res) => {
   const {data, error} = await getListOfClasses();
   if(error) {
     log("error", `Error getting list of all classes: ${error.message}`);
