@@ -195,7 +195,7 @@ export default function ChatInterface() {
     <div className="flex gap-4 h-[600px]">
       {/* chanels Sidebar */}
       <Card className="w-64 p-4 flex flex-col">
-        <h3 className="font-semibold text-gray-900 mb-4">Class chanels</h3>
+        <h3 className="font-semibold text-gray-900 mb-4">Class Channels</h3>
         <div className="space-y-2">
           {chanels
             .filter((c) => c.type === "general")

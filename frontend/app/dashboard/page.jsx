@@ -9,7 +9,6 @@ import Header from "@/components/layout/Header";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
 
-// Mock data - will be replaced with backend API`
 export default function DashboardPage() {
   const { user, loading } = useAuth();
   const [userClasses, setUserClasses] = useState([]);
