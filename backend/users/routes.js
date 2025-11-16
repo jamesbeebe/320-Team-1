@@ -1,6 +1,6 @@
 // this contains all the user routes
 import express from "express";
-import { getUser, deleteUser, getSpecificUser, getUserWithClasses, getUsersWithClasses} from "./services.js";
+import { getUser, deleteUser, getSpecificUser, getUsersCompatibility} from "./services.js";
 export const userRouter = express.Router();
 userRouter.get("/", async (req, res) => {
     try {
@@ -36,35 +36,14 @@ userRouter.delete("/:userId", async (req, res) => {
     }
 });
 
-userRouter.get("/classes/:classId/:userId", async (req, res) => {
-    try {
-        const { classId, userId } = req.params;
-        const usersWithClasses = await getUsersWithClasses(classId, userId);
-
-        if(usersWithClasses.length === 0){
-            return res.status(404).json({error: "No users with classes found"});
-        }
-
-        return res.status(200).json(usersWithClasses);
-    } 
-    catch (error) {
-        console.error("Error fetching users with classes:", error.message);
-        return res.status(500).json({error: "Internal Server Error"});
-    }
-});
-
-userRouter.get("/:userId/classes", async (req, res) => {
+userRouter.get("/:userId/compatibility/:classId", async (req, res) => {
     try {
         const userId = req.params.userId;
-        const user = await getUserWithClasses(userId);  
-        if(!user){
-            return res.status(404).json({error: "No user found"});
-        }
-
-        return res.status(200).json(user);
-    } 
-    catch (error) {
-        console.error("Error fetching user with classes:", error.message);
+        const classId = req.params.classId;
+        const compatibilityData = await getUsersCompatibility(userId, classId);
+        return res.status(200).json(compatibilityData);
+    } catch (error) {
+        console.error("Error fetching users compatibility:", error);
         return res.status(500).json({error: "Internal Server Error"});
     }
 });

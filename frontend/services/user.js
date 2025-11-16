@@ -11,22 +11,15 @@ export const userService = {
       throw error;
     }
   },
-  async getUserWithClasses(userId){
-    try {
-      const data = await api.get(`/users/${userId}/classes`);
-      return data;
-    } catch (error) {
-      console.error("Error fetching user with classes:", error);
-      throw error;
-    }
-  },
-  async getUsersWithClasses(classId, userId){
+
+  async getUsersCompatibility(userId, classId){
     try{
-      const data = await api.get(`/users/classes/${classId}/${userId}`);
+      const data = await api.get(`/users/${userId}/compatibility/${classId}`);
       return data;
     } catch (error) {
-      console.error("Error fetching users with classes:", error);
+      console.error("Error fetching users compatibility:", error);
       throw error;
     }
   }
+  
 }

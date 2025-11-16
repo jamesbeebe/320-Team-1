@@ -34,43 +34,11 @@ export async function deleteUser(userId) {
   return data[0];
 }
 
-export async function getUsersWithClasses(classId, userId) {
-
-  const { data: classUsers, error: classError } = await supabase
-    .from("user_classes")
-    .select("user_id")
-    .eq("class_id", classId);
-
-  if (classError) {
-    throw new Error(`Error fetching class users: ${classError.message}`);
-  }
-
-  if (!classUsers || classUsers.length === 0) {
-    return []; 
-  }
-
-  const userIds = classUsers.map((u) => u.user_id);
-
-  const { data: users, error: userError } = await supabase
-    .from("users")
-    .select("*, user_classes(class_id)")
-    .in("id", userIds)
-    .not("id", "eq", userId);
-
-  if (userError) {
-    throw new Error(`Error fetching user details: ${userError.message}`);
-  }
-
-  return users;
-}
-
-
-export async function getUserWithClasses(userId) {
-  const { data, error } = await supabase
-    .from("users")
-    .select("*, user_classes(*)")
-    .eq("id", userId)
-    .single();
+export async function getUsersCompatibility(userId, classId) {
+  const { data, error } = await supabase.rpc("get_class_compatibility", {
+    target_user_id: userId,
+    target_class_id: classId
+  });
   if (error) {
     throw new Error(error.message);
   }
