@@ -133,3 +133,31 @@ from pg_catalog.pg_proc p
   left join pg_catalog.pg_namespace n on n.oid = p.pronamespace
 where n.nspname = 'public'
 order by p.proname;
+
+-- script to poplate the chats table
+INSERT INTO chats (
+    class_id,
+    name,
+    type,
+    created_at,
+    expires_at
+)
+SELECT
+    c.id AS class_id,
+    -- Concatenate subject and catalog to form the chat name
+    c.subject || ' ' || c.catalog AS name,
+    'general' AS type,
+
+    -- Set created_at to the current timestamp (today)
+    -- PostgreSQL: NOW()
+    -- MySQL: NOW() or CURDATE()
+    -- SQL Server: GETDATE()
+    NOW() AS created_at,
+
+    -- Set expires_at to one year from the current date
+    -- PostgreSQL: NOW() + INTERVAL '1 year'
+    -- MySQL: DATE_ADD(NOW(), INTERVAL 1 YEAR)
+    -- SQL Server: DATEADD(year, 1, GETDATE())
+    (NOW() + INTERVAL '1 year') AS expires_at
+FROM
+    classes c;

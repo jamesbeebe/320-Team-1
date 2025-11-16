@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { authService } from "@/services/auth";
 import api from "@/services/api";
 
@@ -12,6 +12,7 @@ export function AuthProvider({ children }) {
   const [accessToken, setAccessToken] = useState(null); // Store access token in memory only
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const pathname = usePathname();
 
   // Connect API service to access token from context
   useEffect(() => {
@@ -25,20 +26,24 @@ export function AuthProvider({ children }) {
       .then((user) => {
         setUser(user);
         setLoading(false);
-        router.push("/dashboard");
+
+        // If already authenticated and on auth pages, go to dashboard
+        if (pathname === "/login" || pathname === "/signup") {
+          router.replace("/dashboard");
+        }
       })
       .catch((error) => {
         setLoading(false);
         router.push("/login");
       });
-  }, [router]);
+  }, [pathname, router]);
 
   const login = async (email, password) => {
     const data = await authService.login(email, password);
     if (data.accessToken) {
       setAccessToken(data.accessToken);
     }
-    setUser({id: data.user.id, ...data.user.user_metadata});
+    setUser({ id: data.user.id, ...data.user.user_metadata });
     router.push("/dashboard");
   };
 
