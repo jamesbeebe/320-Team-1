@@ -161,3 +161,105 @@ SELECT
     (NOW() + INTERVAL '1 year') AS expires_at
 FROM
     classes c;
+
+CREATE VIEW user_class_summary AS
+SELECT
+    u.id,
+    u.name,
+    u.grad_year,
+    u.major,
+    STRING_AGG(c.class_id::text, ', ') AS class_ids -- All classes for the user
+FROM
+    users u
+JOIN
+    user_classes c ON u.id = c.user_id
+GROUP BY
+    u.id, u.name, u.grad_year, u.major;
+
+CREATE OR REPLACE FUNCTION get_class_compatibility(
+    target_user_id UUID,
+    target_class_id INTEGER
+)
+RETURNS TABLE (
+    id UUID,
+    name TEXT,
+    major TEXT,
+    grad_year INTEGER,
+    common_class_count_raw NUMERIC,
+    shares_major BOOLEAN,
+    shares_grad_year BOOLEAN,
+    weighted_score NUMERIC
+)
+LANGUAGE sql
+AS $$
+WITH TargetUser AS (
+    -- Info for the main user
+    SELECT
+        id,
+        major AS target_major,
+        grad_year AS target_grad_year,
+        regexp_split_to_array(class_ids, ', ') AS target_classes,
+        CARDINALITY(regexp_split_to_array(class_ids, ', ')) AS target_total_classes
+    FROM user_class_summary
+    WHERE id = target_user_id
+),
+
+Classmates AS (
+    -- Only users in the same specific class
+    SELECT
+        ucs.id,
+        ucs.name,
+        ucs.major,
+        ucs.grad_year,
+        regexp_split_to_array(ucs.class_ids, ', ') AS classes
+    FROM user_class_summary ucs
+    JOIN user_classes uc ON ucs.id = uc.user_id
+    WHERE uc.class_id = target_class_id
+      AND ucs.id != target_user_id
+),
+
+UserMetrics AS (
+    -- Compute compatibility metrics
+    SELECT
+        c.id,
+        c.name,
+        c.major,
+        c.grad_year,
+
+        -- Common class count (intersection)
+        CAST(array_length(
+            ARRAY(
+                SELECT UNNEST(c.classes)
+                INTERSECT
+                SELECT UNNEST(tu.target_classes)
+            ), 1
+        ) AS NUMERIC) AS common_class_count_raw,
+
+        -- Boolean similarities
+        (c.major = tu.target_major) AS shares_major,
+        (c.grad_year = tu.target_grad_year) AS shares_grad_year,
+
+        tu.target_total_classes
+    FROM Classmates c
+    CROSS JOIN TargetUser tu
+)
+
+SELECT
+    id,
+    name,
+    major,
+    grad_year,
+    common_class_count_raw,
+    shares_major,
+    shares_grad_year,
+
+    -- Weighted compatibility score
+    (
+        (common_class_count_raw / target_total_classes) * 0.6 +
+        (CASE WHEN shares_major THEN 1.0 ELSE 0.0 END) * 0.3 +
+        (CASE WHEN shares_grad_year THEN 1.0 ELSE 0.0 END) * 0.1
+    ) AS weighted_score
+
+FROM UserMetrics
+ORDER BY weighted_score DESC;
+$$;
