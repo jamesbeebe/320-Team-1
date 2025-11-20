@@ -50,7 +50,12 @@ export default function ChatInterface() {
   }, [loading, user]);
 
   const formatMessage = (message) => {
-    const messageSenderName = message.name || "Unknown User";
+    // Use current user's name from AuthContext if it's their message
+    const isOwnMessage = user ? message.user_id === user.id : false;
+    const messageSenderName = isOwnMessage && user?.name 
+      ? user.name 
+      : (message.name || "Unknown User");
+      
     const timestamp = new Date(message.timestamp).toLocaleTimeString("en-US", {
       hour: "2-digit",
       minute: "2-digit",
@@ -73,7 +78,7 @@ export default function ChatInterface() {
       content: message.content,
       sender,
       initials,
-      isOwn: user ? message.user_id === user.id : false,
+      isOwn: isOwnMessage,
     };
   };
 
@@ -95,6 +100,33 @@ export default function ChatInterface() {
       setIsLoading(false);
     }
   };
+
+  // Reformat messages when user profile updates (without reconnecting WebSocket)
+  useEffect(() => {
+    if (!user) return;
+    
+    // Reformat all existing messages to use updated user name
+    setChanelMessages((prev) => {
+      const updated = {};
+      Object.keys(prev).forEach((channelId) => {
+        const messages = prev[channelId];
+        // Only reformat messages that belong to the current user
+        updated[channelId] = messages.map((msg) => {
+          if (msg.user_id === user.id) {
+            // Reformat with new user name
+            const [firstName = "User", lastName = ""] = user.name.split(" ");
+            return {
+              ...msg,
+              sender: `${firstName} ${lastName ? lastName[0].toUpperCase() + "." : ""}`,
+              initials: `${firstName[0].toUpperCase()}${lastName ? lastName[0].toUpperCase() : ""}`,
+            };
+          }
+          return msg;
+        });
+      });
+      return { ...prev, ...updated };
+    });
+  }, [user?.name]); // Only trigger when user name changes
 
   useEffect(() => {
     if (!selectedChanel) return;

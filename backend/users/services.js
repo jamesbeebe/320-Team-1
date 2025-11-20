@@ -26,3 +26,26 @@ export async function deleteUser(userId){
     return data[0];
 }
 
+// Get current user profile from Supabase Auth
+export async function getCurrentUserProfile(accessToken) {
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+    if (error) {
+        throw new Error(error.message);
+    }
+    return user;
+}
+
+// Update current user profile
+export async function updateUserProfile(accessToken, updates) {
+    // Update the user's metadata in Supabase Auth
+    const { data, error } = await supabase.auth.updateUser({
+        data: updates
+    });
+    
+    if (error) {
+        throw new Error(error.message);
+    }
+    
+    return data.user;
+}
+

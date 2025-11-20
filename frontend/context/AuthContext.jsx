@@ -23,8 +23,13 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     authService
       .isAuthenticated()
-      .then((user) => {
-        setUser(user);
+      .then((data) => {
+        // Set both user and access token from response
+        const userData = { id: data.user.id, ...data.user.user_metadata };
+        setUser(userData);
+        if (data.accessToken) {
+          setAccessToken(data.accessToken);
+        }
         setLoading(false);
 
         // If already authenticated and on auth pages, go to dashboard
@@ -34,7 +39,10 @@ export function AuthProvider({ children }) {
       })
       .catch((error) => {
         setLoading(false);
-        router.push("/login");
+        // Don't redirect on every page, only if accessing protected routes
+        if (pathname !== "/login" && pathname !== "/signup" && pathname !== "/") {
+          router.push("/login");
+        }
       });
   }, [pathname, router]);
 
@@ -71,6 +79,14 @@ export function AuthProvider({ children }) {
     router.push("/login");
   };
 
+  // Update user data in context
+  const updateUser = (newUserData) => {
+    setUser(prevUser => ({
+      ...prevUser,
+      ...newUserData
+    }));
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -80,6 +96,7 @@ export function AuthProvider({ children }) {
         login,
         signup,
         logout,
+        updateUser,
       }}
     >
       {children}

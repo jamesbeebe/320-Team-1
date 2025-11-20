@@ -127,5 +127,8 @@ authRouter.get("/me", async (req, res) => {
     );
   }
 
-  return res.status(200).json({ user: session.user });
+  return res.status(200).json({ 
+    user: session.user,
+    accessToken: session.access_token
+  });
 });
