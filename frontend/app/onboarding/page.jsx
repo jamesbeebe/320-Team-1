@@ -30,14 +30,12 @@ export default function OnboardingPage() {
   const [allClasses, setAllClasses] = useState([]);
 
   // Filter available classes for manual search
-  let combo;
   const classes = allClasses.filter(
     (cls) => {
-      combo = cls.subject + " " + cls.catalog
       return !currClasses.some((added) => added.id === cls.id) &&
       (cls.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cls.course_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()) || combo.toLowerCase().includes(searchQuery.toLowerCase()))
+        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()) || (cls.subject + " " + cls.catalog).toLowerCase().includes(searchQuery.toLowerCase()))
     }
   );
   const filteredClasses = []
