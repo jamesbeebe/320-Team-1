@@ -30,13 +30,20 @@ export default function OnboardingPage() {
   const [allClasses, setAllClasses] = useState([]);
 
   // Filter available classes for manual search
-  const filteredClasses = allClasses.filter(
-    (cls) =>
-      !currClasses.some((added) => added.id === cls.id) &&
+  let combo;
+  const classes = allClasses.filter(
+    (cls) => {
+      combo = cls.subject + " " + cls.catalog
+      return !currClasses.some((added) => added.id === cls.id) &&
       (cls.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cls.course_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()))
+        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()) || combo.toLowerCase().includes(searchQuery.toLowerCase()))
+    }
   );
+  const filteredClasses = []
+  for(let i = 0; i < 50 && i < classes.length; ++i) {
+    filteredClasses.push(classes[i])
+  }
   console.log("There are " + filteredClasses.length + " classes")
   const handleAddClass = (cls) => {
     const newClass = {
