@@ -7,8 +7,10 @@ import Card from "@/components/ui/Card";
 import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function OnboardingPage() {
+  const { addToast } = useToast()
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -78,8 +80,23 @@ export default function OnboardingPage() {
     const classId = currClasses.map((c) => c.id);
     console.log(classId)
     try {
-      await classService.bulkEnroll(classId, user.id);
-      router.push("/dashboard");
+      const userClasses = await classService.getAllClasses(user.id);
+      console.log("User classes are", userClasses)
+      const duplicateClasses = userClasses.filter(e => classId.includes(e.id));
+      const condition1 = duplicateClasses.length > 0;
+      const condition2 = classId.length + userClasses.length > 6;
+      if(condition1) {
+        console.log("There is a duplicate class");
+        addToast("You are already enrolled in one or more of these classes");
+      }
+      if(condition2) {
+        console.log("Too many classes");
+        addToast("You cannot enroll in more than 6 classes");
+      }
+      if(!condition1 && !condition2) {
+        await classService.bulkEnroll(classId, user.id);
+        router.push("/dashboard");
+      }
     } catch (e) {
       console.error("Bulk enroll failed", e);
     }
