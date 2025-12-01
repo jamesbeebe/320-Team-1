@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function Classmates({ classId }) {
   const [classmates, setClassmates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [infoHover, setInfoHover] = useState(false);
   const { user } = useAuth();
 
   useEffect(() => {
@@ -23,8 +24,7 @@ export default function Classmates({ classId }) {
         setClassmates(classmatesData);
       } catch (err) {
         console.error("Error fetching classmates compatibility:", err);
-      }
-      finally{
+      } finally {
         setLoading(false);
       }
     }
@@ -44,6 +44,28 @@ export default function Classmates({ classId }) {
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-300">
+        <p className="font-semibold">Classmate Name</p>
+        <p className="font-semibold relative">
+          {infoHover && (
+            <Card className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 border-gray-300 bg-white shadow-lg w-60 text-sm pointer-events-none">
+              <div className="p-4 text-left">
+                Your compatibility score is calculated based on shared classes,
+                major, and graduation year to help you find the best study
+                partners.
+              </div>
+            </Card>
+          )}
+          Compatibility Score
+          <span
+            onMouseEnter={() => setInfoHover(true)}
+            onMouseLeave={() => setInfoHover(false)}
+            className="inline-block ml-2 font-gray-600 border border-gray-400 rounded-full px-2.5 hover:bg-gray-200 cursor-default"
+          >
+            i
+          </span>
+        </p>
+      </div>
       {loading ? (
         <p className="text-lg font-semibold text-gray-900">
           Loading classmates...
