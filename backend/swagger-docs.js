@@ -14,7 +14,7 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: "http://localhost:8080/api",
+        url: "api",
       },
     ],
     components: {
