@@ -96,7 +96,7 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="Date *"
+            label="Group Expiration Date *"
             type="date"
             name="date"
             value={formData.date}
@@ -105,7 +105,7 @@ export function StudyGroupsForm (){
           />
 
           <Input
-            label="End Time *"
+            label="Group Expiration Time *"
             type="time"
             name="endTime"
             value={formData.endTime}

@@ -7,8 +7,10 @@ import Card from "@/components/ui/Card";
 import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function OnboardingPage() {
+  const { addToast } = useToast()
   useEffect(() => {
     const fetchClasses = async () => {
       try {
@@ -30,22 +32,21 @@ export default function OnboardingPage() {
   const [allClasses, setAllClasses] = useState([]);
 
   // Filter available classes for manual search
-  const filteredClasses = allClasses.filter(
-    (cls) =>
-      !currClasses.some((added) => added.id === cls.id) &&
+  const classes = allClasses.filter(
+    (cls) => {
+      return !currClasses.some((added) => added.id === cls.id) &&
       (cls.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
         cls.course_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()))
+        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()) || (cls.subject + " " + cls.catalog).toLowerCase().includes(searchQuery.toLowerCase()))
+    }
   );
-  console.log("There are " + filteredClasses.length + " classes")
+  const filteredClasses = []
+  for(let i = 0; i < 50 && i < classes.length; ++i) {
+    filteredClasses.push(classes[i]);
+  }
+ 
   const handleAddClass = (cls) => {
-    const newClass = {
-      id: cls.id,
-      subject: cls.subject,
-      catalog: cls.catalog,
-      section: cls.section,
-    };
-    setCurrClasses((prev) => [...prev, newClass]);
+    setCurrClasses((prev) => [...prev, cls]);
   };
 
   const handleRemoveClass = (id) => {
@@ -54,10 +55,11 @@ export default function OnboardingPage() {
 
   const handleIcsUpload = (uploadedData) => {
     const parsedClasses = uploadedData.classIds.map((id, index) => ({
-      id: id,
-      subject: uploadedData.parsedData.subjectArray[index],
-      catalog: uploadedData.parsedData.catalogArray[index],
-      section: uploadedData.parsedData.sectionArray[index],
+        id: id,
+        subject: uploadedData.parsedData.subjectArray[index],
+        catalog: uploadedData.parsedData.catalogArray[index],
+        section: uploadedData.parsedData.sectionArray[index],
+        course_title: allClasses[id - 27].course_title,
     }));
 
     setCurrClasses((prev) => {
@@ -68,13 +70,26 @@ export default function OnboardingPage() {
     });
   };
 
+  // Enrolls in classes or pop up notification with details
   const handleContinue = async () => {
     if (loading || !user) return;
-    const classId = currClasses.map((c) => c.id);
-    console.log(classId)
+    const classTitles = currClasses.map(c => c.course_title);
     try {
-      await classService.bulkEnroll(classId, user.id);
-      router.push("/dashboard");
+      const userClasses = await classService.getAllClasses(user.id);
+      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.course_title));
+      const titleSet = new Set(classTitles);
+      const condition1 = duplicateClasses.length > 0 || titleSet.size !== classTitles.length;
+      const condition2 = classTitles.length + userClasses.length > 6;
+      if(condition1) {
+        addToast("You cannot enroll in the same class more than once");
+      }
+      if(condition2) {
+        addToast("You cannot enroll in more than 6 classes");
+      }
+      if(!condition1 && !condition2) {
+        await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
+        router.push("/dashboard");
+      }
     } catch (e) {
       console.error("Bulk enroll failed", e);
     }
