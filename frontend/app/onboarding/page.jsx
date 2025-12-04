@@ -59,7 +59,7 @@ export default function OnboardingPage() {
         subject: uploadedData.parsedData.subjectArray[index],
         catalog: uploadedData.parsedData.catalogArray[index],
         section: uploadedData.parsedData.sectionArray[index],
-        course_title: allClasses.filter(e => e.id === id)[0].course_title,
+        course_title: allClasses[id - 27].course_title,
     }));
 
     setCurrClasses((prev) => {
