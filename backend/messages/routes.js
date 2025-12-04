@@ -7,6 +7,49 @@ export const messageRouter = router();
 
 //messageRouter.use(authenticate);
 
+/**
+ * @swagger
+ * tags:
+ *   - name: Messages
+ *     description: Retrieve chat messages
+ */
+
+/**
+ * @swagger
+ * /messages/{chatId}:
+ *   get:
+ *     tags: [Messages]
+ *     summary: Get messages for a chat within a date range
+ *     parameters:
+ *       - in: path
+ *         name: chatId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: startDate
+ *         required: false
+ *         description: ISO date string. Defaults to start of yesterday.
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *       - in: query
+ *         name: endDate
+ *         required: false
+ *         description: ISO date string. Defaults to end of today.
+ *         schema:
+ *           type: string
+ *           format: date-time
+ *     responses:
+ *       200:
+ *         description: List of messages
+ *       500:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 messageRouter.get("/:chatId", async (req, res) => {
   const { chatId } = req.params;
   let { startDate, endDate } = req.query;

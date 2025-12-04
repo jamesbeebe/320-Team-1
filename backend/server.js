@@ -11,6 +11,9 @@ import { icsRouter } from "./ics/routes.js"
 import { chatRouter } from "./chat/routes.js";
 import { userChatsRouter } from "./user_chats/routes.js";
 import { classesRouter } from "./classes/routes.js";
+import swaggerJsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import { swaggerOptions } from "./swagger-docs.js";
 
 export const app = express();
 export const httpServer = http.createServer(app);
@@ -35,6 +38,10 @@ app.use(express.json());
 
 // Middleware to parse cookies
 app.use(cookieParser());
+
+// swagger documentation
+const specs = swaggerJsdoc(swaggerOptions);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(specs));
 
 // Setup WebSocket with ChatManager singleton
 const chatManager = ChatManager.getInstance();
