@@ -112,12 +112,13 @@ export default function SignupPage() {
         </form>
 
         <p className="text-center mt-6 text-gray-600">
-          Already have an account?
+          Already have an account? 
           <Link
             href="/login"
             className="text-[#EF5350] hover:text-[#E53935] font-medium"
           >
-            Log In
+          {" "}
+          Log In
           </Link>
         </p>
       </Card>
