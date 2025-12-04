@@ -1,7 +1,7 @@
 "use client"
 
 import {useState} from "react";
-import {useRouter, useParams} from "next/navigation";
+import {useRouter, useParams, useSearchParams} from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { studyGroupService } from "@/services";
 import Card from "../ui/Card";
@@ -11,6 +11,9 @@ import Button from "../ui/Button";
 export function StudyGroupsForm (){
   const router = useRouter();
   const {user} = useAuth();
+  const searchParams = useSearchParams();
+  const className = searchParams.get("name") || "";
+  const classSection = searchParams.get("section") || "";
   const {id} = useParams();
   const [formData, setFormData] = useState({
     studyGroupName: '',
@@ -57,7 +60,7 @@ export function StudyGroupsForm (){
           userId: user.id
       });
 
-      router.push(`/class/${id}`);
+      router.push(`/class/${id}?name=${className}&section=${classSection}`);
     } catch (err) {
       setError(err.message || 'Failed to create study group. Please try again.');
       console.error('Error creating study group: ', err);

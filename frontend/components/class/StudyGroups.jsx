@@ -8,7 +8,7 @@ import Card from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import { useAuth } from "@/context/AuthContext";
 
-export default function StudyGroups() {
+export default function StudyGroups({className, classSection}) {
   const { id } = useParams();
   const [studyGroups, setStudyGroups] = useState([]);
   const [error, setError] = useState("");
@@ -69,7 +69,7 @@ export default function StudyGroups() {
   return (
     <div>
       <div className="mb-6">
-        <Link href={`/class/${id}/create-study-group`}>
+        <Link href={`/class/${id}/create-study-group?name=${className}&section=${classSection}`}>
           <Button className="flex items-center gap-2">
             <svg
               className="w-5 h-5"
