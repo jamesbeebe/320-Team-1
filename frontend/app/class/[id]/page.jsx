@@ -98,7 +98,7 @@ export default function ClassDetailsPage() {
           </nav>
         </div>
         <div>
-          <ActiveComponent classId={classId} />
+          <ActiveComponent classId={classId} className = {className} classSection = {classSection}/>
         </div>
       </div>
     </>
