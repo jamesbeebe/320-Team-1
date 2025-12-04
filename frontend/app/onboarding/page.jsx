@@ -42,17 +42,11 @@ export default function OnboardingPage() {
   );
   const filteredClasses = []
   for(let i = 0; i < 50 && i < classes.length; ++i) {
-    filteredClasses.push(classes[i])
+    filteredClasses.push(classes[i]);
   }
-  console.log("There are " + filteredClasses.length + " classes")
+ 
   const handleAddClass = (cls) => {
-    const newClass = {
-      id: cls.id,
-      subject: cls.subject,
-      catalog: cls.catalog,
-      section: cls.section,
-    };
-    setCurrClasses((prev) => [...prev, newClass]);
+    setCurrClasses((prev) => [...prev, cls]);
   };
 
   const handleRemoveClass = (id) => {
@@ -61,10 +55,11 @@ export default function OnboardingPage() {
 
   const handleIcsUpload = (uploadedData) => {
     const parsedClasses = uploadedData.classIds.map((id, index) => ({
-      id: id,
-      subject: uploadedData.parsedData.subjectArray[index],
-      catalog: uploadedData.parsedData.catalogArray[index],
-      section: uploadedData.parsedData.sectionArray[index],
+        id: id,
+        subject: uploadedData.parsedData.subjectArray[index],
+        catalog: uploadedData.parsedData.catalogArray[index],
+        section: uploadedData.parsedData.sectionArray[index],
+        course_title: allClasses.filter(e => e.id === id)[0].course_title,
     }));
 
     setCurrClasses((prev) => {
@@ -75,26 +70,24 @@ export default function OnboardingPage() {
     });
   };
 
+  // Enrolls in classes or pop up notification with details
   const handleContinue = async () => {
     if (loading || !user) return;
-    const classId = currClasses.map((c) => c.id);
-    console.log(classId)
+    const classTitles = currClasses.map(c => c.course_title);
     try {
       const userClasses = await classService.getAllClasses(user.id);
-      console.log("User classes are", userClasses)
-      const duplicateClasses = userClasses.filter(e => classId.includes(e.id));
-      const condition1 = duplicateClasses.length > 0;
-      const condition2 = classId.length + userClasses.length > 6;
+      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.course_title));
+      const titleSet = new Set(classTitles);
+      const condition1 = duplicateClasses.length > 0 || titleSet.size !== classTitles.length;
+      const condition2 = classTitles.length + userClasses.length > 6;
       if(condition1) {
-        console.log("There is a duplicate class");
-        addToast("You are already enrolled in one or more of these classes");
+        addToast("You cannot enroll in the same class more than once");
       }
       if(condition2) {
-        console.log("Too many classes");
         addToast("You cannot enroll in more than 6 classes");
       }
       if(!condition1 && !condition2) {
-        await classService.bulkEnroll(classId, user.id);
+        await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
         router.push("/dashboard");
       }
     } catch (e) {

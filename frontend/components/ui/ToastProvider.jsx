@@ -1,17 +1,17 @@
 "use client";
 
-import { createContext, useContext, useState, useCallback } from "react";
+import { createContext, useContext, useState } from "react";
 
-const ToastContext = createContext(null);
+const ToastContext = createContext();
 let message1id = 0;
 let message2id = 0;
 
 export function ToastProvider({ children }) {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = useCallback((message) => {
+  const addToast = (message) => {
     let id;
-    if(message === "You are already enrolled in one or more of these classes") {
+    if(message === "You cannot enroll in the same class more than once") {
         id = ++message1id;
     }
     else {
@@ -22,7 +22,7 @@ export function ToastProvider({ children }) {
     setTimeout(() => {
       setToasts((prev) => prev.filter((toast) => toast.id !== id));
     }, 3000);
-  }, []);
+  };
 
   return (
     <ToastContext.Provider value={{ addToast }}>
