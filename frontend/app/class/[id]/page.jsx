@@ -44,7 +44,7 @@ export default function ClassDetailsPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-6">
           <button
-            onClick={() => router.back()}
+            onClick={() => router.push("/dashboard")}
             className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4"
           >
             <svg
