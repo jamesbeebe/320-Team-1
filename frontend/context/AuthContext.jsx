@@ -34,7 +34,9 @@ export function AuthProvider({ children }) {
       })
       .catch((error) => {
         setLoading(false);
-        router.push("/login");
+        if(pathname != "/signup"){
+          router.push("/login");
+        }
       });
   }, [pathname, router]);
 
