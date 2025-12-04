@@ -14,7 +14,7 @@ export const swaggerOptions = {
     },
     servers: [
       {
-        url: "api",
+        url: "/api",
       },
     ],
     components: {
