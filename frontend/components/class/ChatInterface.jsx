@@ -198,7 +198,7 @@ export default function ChatInterface() {
         <h3 className="font-semibold text-gray-900 mb-4">Class Channels</h3>
         <div className="space-y-2">
           {chanels
-            .filter((c) => c.type === "general")
+            .filter((c) => c.type === "general" && new Date(c.expires_at).getTime() > Date.now())
             .map((chanel) => (
               <div
                 key={getChannelId(chanel)}
@@ -217,7 +217,7 @@ export default function ChatInterface() {
         <h3 className="font-semibold text-gray-900 mt-6 mb-4">Study Groups</h3>
         <div className="space-y-2">
           {chanels
-            .filter((c) => c.type === "study-group")
+            .filter((c) => c.type === "study-group" && new Date(c.expires_at).getTime() > Date.now())
             .map((chanel) => (
               <div
                 key={getChannelId(chanel)}
