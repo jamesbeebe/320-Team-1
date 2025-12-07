@@ -113,6 +113,15 @@ as $$
     and c.expires_at > date;
 $$;
 
+create or replace function delete_expired_chats()
+returns void
+language plpgsql
+as $$
+begin
+    delete from chats
+    where expires_at < now();
+end;
+$$;
 
 create or replace function public.get_all_chats_for_user (
   _user_id uuid
