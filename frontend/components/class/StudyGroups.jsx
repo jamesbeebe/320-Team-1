@@ -12,12 +12,13 @@ export default function StudyGroups({className, classSection}) {
   const { id } = useParams();
   const [studyGroups, setStudyGroups] = useState([]);
   const [error, setError] = useState("");
-  const { user, loading } = useAuth();
+  const { user} = useAuth();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const getGroups = async () => {
-      if (loading) return;
       try {
+        setLoading(true);
         const res = await studyGroupService.getStudyGroups(id, user.id);
         const resMap = res.filter((group) => group.chat_type === "study-group");
         const dataMap = resMap.map((group) => {
@@ -36,9 +37,12 @@ export default function StudyGroups({className, classSection}) {
         setError(error.message);
         console.error("Error loading study groups: ", error);
       }
+      finally{
+        setLoading(false);
+      }
     };
     getGroups();
-  }, [user, loading]);
+  }, [user]);
 
   const handleJoinStudyGroup = async (chatId) => {
     try {
@@ -97,7 +101,11 @@ export default function StudyGroups({className, classSection}) {
       )}
 
       <div className="space-y-4">
-        {studyGroups.map((group) => (
+        {loading ? (
+        <p className="text-lg font-semibold text-gray-900">
+          Loading Study Groups...
+        </p>
+      ) : studyGroups.map((group) => (
           <Card key={group.id} className="p-6 border-width-1 border-gray-300">
             <div className="flex justify-between items-start">
               <div className="flex-1">
