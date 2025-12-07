@@ -85,7 +85,8 @@ create type chat_with_user_info as (
   chat_name text,
   class_id int4,
   expires_at timestamptz,
-  enrolled_in boolean
+  enrolled_in boolean,
+  chat_type varchar
 );
 
 create or replace function get_all_chats_for_class(
@@ -102,11 +103,14 @@ as $$
     c.name as chat_name,
     c.class_id,
     c.expires_at,
-    (u.user_id is not null) as enrolled_in
+    (u.user_id is not null) as enrolled_in,
+    c.type as chat_type
   from chats c
   left join user_chats u
-    on u.chat_id = c.id and u.user_id = userId
-  where c.class_id = classId and c.expires_at > date;
+    on u.chat_id = c.id 
+    and u.user_id = userId
+  where c.class_id = classId
+    and c.expires_at > date;
 $$;
 
 

@@ -2,31 +2,14 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useParams } from "next/navigation";
 import { chatService } from "@/services/chat";
 import Card from "@/components/ui/Card";
 
-const getChannelId = (ch) => ch?.id ?? ch?.class_id ?? null;
-
-// Mock chanels
-// const mockChannels = [
-//   {
-//     class_id: "1b6cd7de-c6ed-434a-953d-7ff9da5d6ac0",
-//     name: "CS 311 General",
-//     type: "general",
-//   },
-//   {
-//     id: "aa36e595-aae4-4a3f-b26e-952549a4d65d",
-//     name: "Midterm 1 Review",
-//     type: "general",
-//   },
-//   {
-//     id: "ba2f80dd-8a7b-498d-a7ea-7e7bd003641b",
-//     name: "Dynamic Programming",
-//     type: "study-group",
-//   },
-// ];
+const getChannelId = (ch) => ch?.chat_id ?? ch?.class_id ?? null;
 
 export default function ChatInterface() {
+  const {id} = useParams();
   const [messageInput, setMessageInput] = useState("");
   const [chanels, setChanels] = useState([]);
   const [chanelMessages, setChanelMessages] = useState({});
@@ -42,7 +25,7 @@ export default function ChatInterface() {
   useEffect(() => {
     if (loading || !user) return;
     const getStudyGroupChats = async () => {
-      const studyGroupChats = await chatService.getChannelsForUser(user.id);
+      const studyGroupChats = await chatService.getChannelsForUser(user.id, id);
       setChanels(studyGroupChats || []);
       setSelectedChanel((prev) => prev ?? studyGroupChats?.[0] ?? null);
     };
@@ -198,7 +181,7 @@ export default function ChatInterface() {
         <h3 className="font-semibold text-gray-900 mb-4">Class Channels</h3>
         <div className="space-y-2">
           {chanels
-            .filter((c) => c.type === "general" && new Date(c.expires_at).getTime() > Date.now())
+            .filter((c) => c.chat_type === "general" && new Date(c.expires_at).getTime() > Date.now())
             .map((chanel) => (
               <div
                 key={getChannelId(chanel)}
@@ -210,14 +193,14 @@ export default function ChatInterface() {
                     : "hover:bg-gray-100"
                 }`}
               >
-                {chanel.name}
+                {chanel.chat_name}
               </div>
             ))}
         </div>
         <h3 className="font-semibold text-gray-900 mt-6 mb-4">Study Groups</h3>
         <div className="space-y-2">
           {chanels
-            .filter((c) => c.type === "study-group" && new Date(c.expires_at).getTime() > Date.now())
+            .filter((c) => c.chat_type === "study-group" && new Date(c.expires_at).getTime() > Date.now())
             .map((chanel) => (
               <div
                 key={getChannelId(chanel)}
@@ -229,7 +212,7 @@ export default function ChatInterface() {
                     : "hover:bg-gray-100"
                 }`}
               >
-                {chanel.name}
+                {chanel.chat_name}
               </div>
             ))}
         </div>

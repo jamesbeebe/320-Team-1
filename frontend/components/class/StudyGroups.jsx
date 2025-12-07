@@ -19,7 +19,8 @@ export default function StudyGroups({className, classSection}) {
       if (loading) return;
       try {
         const res = await studyGroupService.getStudyGroups(id, user.id);
-        const dataMap = res.map((group) => {
+        const resMap = res.filter((group) => group.chat_type === "study-group");
+        const dataMap = resMap.map((group) => {
           const readableDate = new Date(group.expires_at).toLocaleString();
           const splitted = readableDate.split(", ");
           return {
