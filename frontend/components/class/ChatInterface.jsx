@@ -27,7 +27,8 @@ export default function ChatInterface() {
     const getStudyGroupChats = async () => {
       const studyGroupChats = await chatService.getChannelsForUser(user.id, id);
       setChanels(studyGroupChats || []);
-      setSelectedChanel((prev) => prev ?? studyGroupChats?.[0] ?? null);
+      const firstGeneral = studyGroupChats?.find(chat => chat.chat_type === "general")
+      setSelectedChanel((prev) => prev ?? firstGeneral ?? studyGroupChats?.[0] ?? null);
     };
     getStudyGroupChats();
   }, [loading, user]);
