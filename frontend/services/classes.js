@@ -1,6 +1,14 @@
 import api from "./api";
 
 export const classService = {
+    //Get list containing every class
+    async getListOfClasses() {
+        try {
+            return await api.get(`/classes/list-classes`);
+        } catch(error) {
+            throw error;
+        }
+    },
   // Get all available classes
   async getAllClasses(userId) {
     try {

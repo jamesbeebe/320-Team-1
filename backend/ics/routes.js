@@ -7,6 +7,61 @@ export const icsRouter = express.Router();
 // Configure multer to store file in memory as buffer
 const upload = multer({ storage: multer.memoryStorage() });
 
+/**
+ * @swagger
+ * tags:
+ *   - name: ICS
+ *     description: Upload and process ICS calendar files
+ *
+ * components:
+ *   schemas:
+ *     ICSUploadResponse:
+ *       type: object
+ *       properties:
+ *         success:
+ *           type: boolean
+ *         parsedData:
+ *           type: object
+ *           description: Parsed ICS data
+ *         classIds:
+ *           type: array
+ *           items:
+ *             type: string
+ */
+
+/**
+ * @swagger
+ * /upload/ics:
+ *   post:
+ *     tags: [ICS]
+ *     summary: Upload ICS file
+ *     description: Accepts a single ICS file under the "file" field and returns parsed data.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *     responses:
+ *       200:
+ *         description: Parsed ICS content and matched class IDs
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ICSUploadResponse'
+ *       400:
+ *         description: No or empty file uploaded
+ *       500:
+ *         description: Internal Server Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 icsRouter.post("/ics", upload.single("file"), async (req, res) => {
   try {
     log("info", "Received ICS upload request");

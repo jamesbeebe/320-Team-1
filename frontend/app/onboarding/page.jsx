@@ -1,84 +1,95 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
-
-// Mock class data — replace with real backend data later
-const mockClasses = [
-  {
-    id: 1,
-    code: "CS 311",
-    name: "Intro to Algorithms",
-    professor: "Dr. Smith",
-  },
-  { id: 2, code: "MATH 241", name: "Calculus III", professor: "Dr. Johnson" },
-  {
-    id: 3,
-    code: "PHYS 211",
-    name: "University Physics",
-    professor: "Dr. Williams",
-  },
-  { id: 4, code: "CS 225", name: "Data Structures", professor: "Dr. Brown" },
-  { id: 5, code: "ECE 220", name: "Computer Systems", professor: "Dr. Davis" },
-];
+import { useToast } from "@/components/ui/ToastProvider";
 
 export default function OnboardingPage() {
+  const { addToast } = useToast()
+  useEffect(() => {
+    const fetchClasses = async () => {
+      try {
+        const classes = await classService.getListOfClasses();
+        setAllClasses(classes || []);
+      } catch (e) {
+        console.error("Can't access list of classes", e);
+        setAllClasses([]);
+      };
+    }
+    fetchClasses();
+  }, []);
+
   const router = useRouter();
   const { user, loading } = useAuth();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [currClasses, setCurrClasses] = useState([]);
+  const [allClasses, setAllClasses] = useState([]);
 
   // Filter available classes for manual search
-  const filteredClasses = mockClasses.filter(
-    (cls) =>
-      !currClasses.some((added) => added.classId === cls.id) &&
-      (cls.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cls.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        cls.professor.toLowerCase().includes(searchQuery.toLowerCase()))
+  const classes = allClasses.filter(
+    (cls) => {
+      return !currClasses.some((added) => added.id === cls.id) &&
+      (cls.subject.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cls.course_title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        cls.catalog.toLowerCase().includes(searchQuery.toLowerCase()) || (cls.subject + " " + cls.catalog).toLowerCase().includes(searchQuery.toLowerCase()))
+    }
   );
-
+  const filteredClasses = []
+  for(let i = 0; i < 50 && i < classes.length; ++i) {
+    filteredClasses.push(classes[i]);
+  }
+ 
   const handleAddClass = (cls) => {
-    const newClass = {
-      classId: cls.id,
-      subject: cls.code,
-      name: cls.name,
-      professor: cls.professor,
-    };
-    setCurrClasses((prev) => [...prev, newClass]);
+    setCurrClasses((prev) => [...prev, cls]);
   };
 
-  const handleRemoveClass = (classId) => {
-    setCurrClasses((prev) => prev.filter((cls) => cls.classId !== classId));
+  const handleRemoveClass = (id) => {
+    setCurrClasses((prev) => prev.filter((cls) => cls.id !== id));
   };
 
   const handleIcsUpload = (uploadedData) => {
     const parsedClasses = uploadedData.classIds.map((id, index) => ({
-      classId: id,
-      subject: uploadedData.parsedData.subjectArray[index],
-      catalog: uploadedData.parsedData.catalogArray[index],
-      section: uploadedData.parsedData.sectionArray[index],
+        id: id,
+        subject: uploadedData.parsedData.subjectArray[index],
+        catalog: uploadedData.parsedData.catalogArray[index],
+        section: uploadedData.parsedData.sectionArray[index],
+        course_title: allClasses[id - 27].course_title,
     }));
 
     setCurrClasses((prev) => {
       const newOnes = parsedClasses.filter(
-        (cls) => !prev.some((c) => c.classId === cls.classId)
+        (cls) => !prev.some((c) => c.id === cls.id)
       );
       return [...prev, ...newOnes];
     });
   };
 
+  // Enrolls in classes or pop up notification with details
   const handleContinue = async () => {
     if (loading || !user) return;
-    const classIds = currClasses.map((c) => c.classId);
+    const classTitles = currClasses.map(c => c.course_title);
     try {
-      await classService.bulkEnroll(classIds, user.id);
-      router.push("/dashboard");
+      const userClasses = await classService.getAllClasses(user.id);
+      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.course_title));
+      const titleSet = new Set(classTitles);
+      const condition1 = duplicateClasses.length > 0 || titleSet.size !== classTitles.length;
+      const condition2 = classTitles.length + userClasses.length > 6;
+      if(condition1) {
+        addToast("You cannot enroll in the same class more than once");
+      }
+      if(condition2) {
+        addToast("You cannot enroll in more than 6 classes");
+      }
+      if(!condition1 && !condition2) {
+        await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
+        router.push("/dashboard");
+      }
     } catch (e) {
       console.error("Bulk enroll failed", e);
     }
@@ -123,13 +134,11 @@ export default function OnboardingPage() {
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
                 >
                   <div>
-                    <h3 className="font-semibold text-gray-900">{cls.code}</h3>
-                    <p className="text-sm text-gray-600">{cls.name}</p>
-                    <p className="text-sm text-gray-500">{cls.professor}</p>
+                    <h3 className="font-semibold text-gray-900">{cls.subject} {cls.catalog}</h3>
+                    <p className="text-sm text-gray-600">{"Section " + cls.section}</p>
                   </div>
                   <Button
                     onClick={() => handleAddClass(cls)}
-                    className="px-6 bg-[#FFCDD2] hover:bg-[#EF9A9A] text-gray-700"
                   >
                     Add
                   </Button>
@@ -154,19 +163,13 @@ export default function OnboardingPage() {
             {currClasses.length > 0 ? (
               currClasses.map((cls) => (
                 <div
-                  key={cls.classId}
+                  key={cls.id}
                   className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-900">
                       {cls.subject} {cls.catalog}
                     </h3>
-                    {cls.name && (
-                      <p className="text-sm text-gray-600">{cls.name}</p>
-                    )}
-                    {cls.professor && (
-                      <p className="text-sm text-gray-500">{cls.professor}</p>
-                    )}
                     {cls.section && (
                       <p className="text-sm text-gray-500">
                         Section {cls.section}
@@ -174,8 +177,7 @@ export default function OnboardingPage() {
                     )}
                   </div>
                   <Button
-                    onClick={() => handleRemoveClass(cls.classId)}
-                    className="px-6 bg-[#FFCDD2] hover:bg-[#EF9A9A] text-gray-700"
+                    onClick={() => handleRemoveClass(cls.id)}
                   >
                     Remove
                   </Button>
@@ -192,14 +194,8 @@ export default function OnboardingPage() {
       <div className="w-full max-w-7xl mx-auto mt-10">
         <Button
           onClick={handleContinue}
-          disabled={currClasses.length === 0}
-          className={`w-full ${
-            currClasses.length > 0
-              ? "bg-[#FFCDD2] hover:bg-[#EF9A9A]"
-              : "bg-gray-200 cursor-not-allowed"
-          } text-gray-700 text-lg py-4 transition-colors`}
-        >
-          Enroll in Classes
+          className={`w-full ${Button.className} text-gray-700 text-lg py-4 transition-colors`}>
+          Save and Go to Dashboard
         </Button>
 
         {currClasses.length > 0 && (
