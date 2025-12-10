@@ -73,7 +73,7 @@ export default function DashboardPage() {
               <Card className="p-6 hover:shadow-lg transition-shadow duration-200 cursor-pointer h-full">
                 <div className="flex flex-col h-full">
                   <div className="mb-4">
-                    <h2 className="text-xl font-bold text-[#EF5350] mb-1">
+                    <h2 className="text-xl font-bold text-[#800000] mb-1">
                       {cls.subject} {cls.catalog}
                     </h2>
                     <p className="text-gray-900 font-medium"> {cls.section}</p>
@@ -81,7 +81,7 @@ export default function DashboardPage() {
                   <div className="mt-auto">
                     <Button
                       variant="secondary"
-                      className="text-red-600 border-red-300 hover:bg-red-50"
+                      className="text-[#A30000] border-[#A30000] hover:bg-red-50"
                       onClick={(e) => handleLeaveClass(e, cls.id)}
                     >
                       Leave
@@ -94,7 +94,7 @@ export default function DashboardPage() {
 
           {/* Add New Class Card */}
           <Link href="/onboarding">
-            <Card className="p-6 border-2 border-dashed border-gray-300 hover:border-[#EF5350] transition-colors duration-200 cursor-pointer h-full flex items-center justify-center min-h-[200px]">
+            <Card className="p-6 border-2 border-dashed border-gray-300 hover:border-[#800000] transition-colors duration-200 cursor-pointer h-full flex items-center justify-center min-h-[200px]">
               <div className="text-center">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
                   <svg

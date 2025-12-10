@@ -42,7 +42,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#EF5350] mb-2">ClassMatch</h1>
+          <h1 className="text-3xl font-bold text-[#800000] mb-2">ClassMatch</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -77,7 +77,7 @@ export default function LoginPage() {
 
         <p className="text-center mt-6 text-gray-600">
           Don't have an account?{' '}
-          <Link href="/signup" className="text-[#EF5350] hover:text-[#E53935] font-medium">
+          <Link href="/signup" className="text-[#800000] hover:text-[#A30000] font-medium">
             Sign Up
           </Link>
         </p>

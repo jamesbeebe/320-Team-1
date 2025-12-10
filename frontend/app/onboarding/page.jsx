@@ -123,7 +123,7 @@ export default function OnboardingPage() {
               placeholder="Search for classes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border-2 border-[#EF5350] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF5350] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border-2 border-[#800000] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent"
             />
           </div>
           <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
@@ -131,7 +131,7 @@ export default function OnboardingPage() {
               filteredClasses.map((cls) => (
                 <div
                   key={cls.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#800000] transition-colors bg-white"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-900">{cls.subject} {cls.catalog}</h3>
@@ -164,7 +164,7 @@ export default function OnboardingPage() {
               currClasses.map((cls) => (
                 <div
                   key={cls.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#800000] transition-colors bg-white"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-900">
