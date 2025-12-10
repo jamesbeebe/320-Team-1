@@ -206,7 +206,7 @@ export default function ChatInterface() {
                 className={`p-3 rounded-lg cursor-pointer transition-colors ${
                   selectedChanel &&
                   getChannelId(selectedChanel) === getChannelId(chanel)
-                    ? "bg-[#EF5350] text-white"
+                    ? "bg-[#800000] text-white"
                     : "hover:bg-gray-100"
                 }`}
               >
@@ -225,7 +225,7 @@ export default function ChatInterface() {
                 className={`p-3 rounded-lg cursor-pointer transition-colors text-sm ${
                   selectedChanel &&
                   getChannelId(selectedChanel) === getChannelId(chanel)
-                    ? "bg-[#EF5350] text-white"
+                    ? "bg-[#800000] text-white"
                     : "hover:bg-gray-100"
                 }`}
               >
@@ -307,7 +307,7 @@ export default function ChatInterface() {
                   <div
                     className={`inline-block px-4 py-2 rounded-lg ${
                       message.isOwn
-                        ? "bg-[#EF5350] text-white"
+                        ? "bg-[#800000] text-white"
                         : "bg-gray-100 text-gray-900"
                     }`}
                   >
@@ -326,12 +326,12 @@ export default function ChatInterface() {
             value={messageInput}
             onChange={(e) => setMessageInput(e.target.value)}
             placeholder="Type a message..."
-            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF5350] focus:border-transparent"
+            className="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent"
           />
           <button
             type="submit"
             disabled={!selectedChanel || !isConnected || !messageInput.trim()}
-            className="bg-[#EF5350] hover:bg-[#E53935] text-white p-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-[#800000] hover:bg-[#A30000] text-white p-3 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg
               className="w-6 h-6"
