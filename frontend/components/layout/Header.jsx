@@ -2,10 +2,17 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function Header() {
   const pathname = usePathname();
-  
+  const { user, loading, logout} = useAuth();
+  const router = useRouter(); 
+  const handleLogout = async () => {
+    router.push('/login');
+    await logout()
+  };
   // Don't show header on auth pages
   if (pathname === '/login' || pathname === '/signup' || pathname === '/onboarding') {
     return null;
@@ -26,11 +33,16 @@ export default function Header() {
               </svg>
             </button>
             
-            <Link href="/profile">
-              <div className="w-10 h-10 bg-[#EF5350] rounded-full flex items-center justify-center text-white font-semibold">
-                JD
-              </div>
-            </Link>
+            <button onClick={handleLogout}>Logout</button>
+            {user ? (
+              <Link href="/profile">
+                <div className="w-10 h-10 bg-[#EF5350] rounded-full flex items-center justify-center text-white font-semibold">
+                  {user.name?.charAt(0) ?? ''}
+                </div>
+              </Link>
+            ) : (
+              <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse" />
+            )}
           </div>
         </div>
       </div>

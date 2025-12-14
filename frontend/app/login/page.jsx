@@ -26,7 +26,6 @@ export default function LoginPage() {
       // Navigation handled by AuthContext
     } catch (err) {
       setError(err.message || 'Failed to login. Please check your credentials.');
-      console.error('Login error:', err);
     } finally {
       setLoading(false);
     }
