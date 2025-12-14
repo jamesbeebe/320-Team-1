@@ -46,7 +46,7 @@ export default function Classmates({ classId }) {
     <div className="space-y-4">
       <div className="flex items-center justify-between px-2 pb-2 border-b border-gray-300">
         <p className="font-semibold">Classmate Name</p>
-        <p className="font-semibold relative">
+        <div className="font-semibold relative">
           {infoHover && (
             <Card className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 border-gray-300 bg-white shadow-lg w-60 text-sm pointer-events-none">
               <div className="p-4 text-left">
@@ -64,7 +64,7 @@ export default function Classmates({ classId }) {
           >
             i
           </span>
-        </p>
+        </div>
       </div>
       {loading ? (
         <p className="text-lg font-semibold text-gray-900">

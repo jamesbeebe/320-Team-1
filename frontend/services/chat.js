@@ -10,10 +10,9 @@ export const chatService = {
     }
   },
 
-  async getChannelsForUser(userId){
+  async getChannelsForUser(userId, classId){
     try{
-      return await api.get(`/chats/class/all/${userId}`)
-
+      return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }

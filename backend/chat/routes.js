@@ -70,7 +70,10 @@ export const chatRouter = router();
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-chatRouter.get("/class/:classId/", async (req, res) => {
+
+
+
+chatRouter.get("/class/:classId", async (req, res) => {
   const { classId } = req.params;
   const { userId } = req.query;
   log("info", `Getting all chats for class ${classId} and user ${userId}`);
