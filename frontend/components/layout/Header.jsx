@@ -35,7 +35,7 @@ export default function Header() {
             
             <button onClick={handleLogout}>Logout</button>
             {user ? (
-              <Link href="/profile">
+              <Link href="#">
                 <div className="w-10 h-10 bg-[#800000] rounded-full flex items-center justify-center text-white font-semibold">
                   {user.name?.charAt(0) ?? ''}
                 </div>
