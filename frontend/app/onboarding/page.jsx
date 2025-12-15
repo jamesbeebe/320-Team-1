@@ -59,7 +59,6 @@ export default function OnboardingPage() {
         subject: uploadedData.parsedData.subjectArray[index],
         catalog: uploadedData.parsedData.catalogArray[index],
         section: uploadedData.parsedData.sectionArray[index],
-        course_title: allClasses[id - 27].course_title,
     }));
 
     setCurrClasses((prev) => {
@@ -73,10 +72,10 @@ export default function OnboardingPage() {
   // Enrolls in classes or pop up notification with details
   const handleContinue = async () => {
     if (loading || !user) return;
-    const classTitles = currClasses.map(c => c.course_title);
     try {
+      const classTitles = currClasses.map(c => c.subject + c.catalog);
       const userClasses = await classService.getAllClasses(user.id);
-      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.course_title));
+      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.subject + e.catalog));
       const titleSet = new Set(classTitles);
       const condition1 = duplicateClasses.length > 0 || titleSet.size !== classTitles.length;
       const condition2 = classTitles.length + userClasses.length > 6;

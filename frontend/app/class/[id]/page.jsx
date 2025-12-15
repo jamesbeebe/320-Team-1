@@ -70,13 +70,12 @@ export default function ClassDetailsPage() {
           </div>
 
           <div className="mt-4">
-            <Button
-              variant="secondary"
-              className="text-[#A30000] border-[#A30000] hover:bg-red-50"
+            <button
+              className="font-medium py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-[#A30000] border border-[#A30000] hover:bg-red-50"
               onClick={handleLeaveClass}
             >
               Leave class
-            </Button>
+            </button>
           </div>
         </div>
 
