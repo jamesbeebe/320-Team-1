@@ -51,7 +51,7 @@ export default function SignupPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <Card className="w-full max-w-md p-8">
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[#EF5350] mb-2">ClassMatch</h1>
+          <h1 className="text-3xl font-bold text-[#800000] mb-2">ClassMatch</h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -115,7 +115,7 @@ export default function SignupPage() {
           Already have an account? 
           <Link
             href="/login"
-            className="text-[#EF5350] hover:text-[#E53935] font-medium"
+            className="text-[#800000] hover:text-[#A30000] font-medium"
           >
           {" "}
           Log In

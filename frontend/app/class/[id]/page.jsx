@@ -70,13 +70,12 @@ export default function ClassDetailsPage() {
           </div>
 
           <div className="mt-4">
-            <Button
-              variant="secondary"
-              className="text-red-600 border-red-300 hover:bg-red-50"
+            <button
+              className="font-medium py-3 px-6 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed text-[#A30000] border border-[#A30000] hover:bg-red-50"
               onClick={handleLeaveClass}
             >
               Leave class
-            </Button>
+            </button>
           </div>
         </div>
 
@@ -88,7 +87,7 @@ export default function ClassDetailsPage() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors ${
                   activeTab === tab.id
-                    ? "border-[#EF5350] text-[#EF5350]"
+                    ? "border-[#800000] text-[#800000]"
                     : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                 }`}
               >
