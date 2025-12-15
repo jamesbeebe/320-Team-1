@@ -22,7 +22,7 @@ export default function Header() {
     <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          <Link href="/dashboard" className="text-2xl font-bold text-[#EF5350]">
+          <Link href="/dashboard" className="text-2xl font-bold text-[#800000]">
             ClassMatch
           </Link>
           
@@ -36,7 +36,7 @@ export default function Header() {
             <button onClick={handleLogout}>Logout</button>
             {user ? (
               <Link href="/profile">
-                <div className="w-10 h-10 bg-[#EF5350] rounded-full flex items-center justify-center text-white font-semibold">
+                <div className="w-10 h-10 bg-[#800000] rounded-full flex items-center justify-center text-white font-semibold">
                   {user.name?.charAt(0) ?? ''}
                 </div>
               </Link>

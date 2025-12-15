@@ -59,7 +59,6 @@ export default function OnboardingPage() {
         subject: uploadedData.parsedData.subjectArray[index],
         catalog: uploadedData.parsedData.catalogArray[index],
         section: uploadedData.parsedData.sectionArray[index],
-        course_title: allClasses[id - 27].course_title,
     }));
 
     setCurrClasses((prev) => {
@@ -73,10 +72,10 @@ export default function OnboardingPage() {
   // Enrolls in classes or pop up notification with details
   const handleContinue = async () => {
     if (loading || !user) return;
-    const classTitles = currClasses.map(c => c.course_title);
     try {
+      const classTitles = currClasses.map(c => c.subject + c.catalog);
       const userClasses = await classService.getAllClasses(user.id);
-      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.course_title));
+      let duplicateClasses = userClasses.filter(e => classTitles.includes(e.subject + e.catalog));
       const titleSet = new Set(classTitles);
       const condition1 = duplicateClasses.length > 0 || titleSet.size !== classTitles.length;
       const condition2 = classTitles.length + userClasses.length > 6;
@@ -123,7 +122,7 @@ export default function OnboardingPage() {
               placeholder="Search for classes..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border-2 border-[#EF5350] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#EF5350] focus:border-transparent"
+              className="w-full pl-10 pr-4 py-3 border-2 border-[#800000] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#800000] focus:border-transparent"
             />
           </div>
           <div className="space-y-3 mb-6 max-h-96 overflow-y-auto">
@@ -131,7 +130,7 @@ export default function OnboardingPage() {
               filteredClasses.map((cls) => (
                 <div
                   key={cls.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#800000] transition-colors bg-white"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-900">{cls.subject} {cls.catalog}</h3>
@@ -164,7 +163,7 @@ export default function OnboardingPage() {
               currClasses.map((cls) => (
                 <div
                   key={cls.id}
-                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#EF5350] transition-colors bg-white"
+                  className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:border-[#800000] transition-colors bg-white"
                 >
                   <div>
                     <h3 className="font-semibold text-gray-900">
