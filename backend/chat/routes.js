@@ -326,6 +326,33 @@ chatRouter.post("/class/:chatId/leave", async (req, res) => {
   return res.status(200).json(data);
 });
 
+/**
+ * @swagger
+ * /chats/class/{classId}/leave/all:
+ *   post:
+ *     tags: [Chat]
+ *     summary: Leave all chats for a class
+ *     parameters:
+ *       - in: path
+ *         name: classId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: query
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Left
+ *       500:
+ *         description: Error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ErrorResponse'
+ */
 chatRouter.post("/class/:classId/leave/all", async (req, res) => {
   const { classId } = req.params;
   const { userId } = req.query;
