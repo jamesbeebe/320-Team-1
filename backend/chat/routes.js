@@ -5,6 +5,7 @@ import {
   createChatForClass,
   updateChatForClass,
   getSpecificTypeForClass,
+  leaveAllChatsForClass,
   joinChat,
   leaveChat,
   getAllUserChats,
@@ -147,7 +148,8 @@ chatRouter.get("/class/all/:userId", async (req, res) => {
  */
 chatRouter.get("/class/:classId/:type", async (req, res) => {
   const { classId, type } = req.params;
-  const { data, error } = await getSpecificTypeForClass(classId, type);
+  const { userId } = req.query;
+  const { data, error } = await getSpecificTypeForClass(classId, userId, type);
   if (error) {
     log("error", `Error getting specific chat: ${error.message}`);
     return res.status(500).json({ error: error.message });
@@ -319,6 +321,18 @@ chatRouter.post("/class/:chatId/leave", async (req, res) => {
   const { data, error } = await leaveChat(chatId, userId);
   if (error) {
     log("error", `Error leaving chat: ${error.message}`);
+    return res.status(500).json({ error: error.message });
+  }
+  return res.status(200).json(data);
+});
+
+chatRouter.post("/class/:classId/leave/all", async (req, res) => {
+  const { classId } = req.params;
+  const { userId } = req.query;
+  log("info", `Leaving all chats for class ${classId} and user ${userId}`);
+  const { data, error } = await leaveAllChatsForClass(classId, userId);
+  if (error) {
+    log("error", `Error leaving all chats for class: ${error.message}`);
     return res.status(500).json({ error: error.message });
   }
   return res.status(200).json(data);

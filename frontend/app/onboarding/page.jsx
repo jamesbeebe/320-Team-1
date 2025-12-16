@@ -91,7 +91,7 @@ export default function OnboardingPage() {
         await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
         async function joinAllGeneralChats() {
           for (let cls of currClasses) {
-            const generalChat = await chatService.getGeneralChannel(cls.id);
+            const generalChat = await chatService.getGeneralChannel(cls.id, user.id);
             const generalChatId = generalChat[0].chat_id;
             await studyGroupService.joinStudyGroup(user.id, generalChatId).catch((e) => {
               console.error("Error joining general chat for class " + cls.id, e);

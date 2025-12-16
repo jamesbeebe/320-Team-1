@@ -8,6 +8,7 @@ import Button from "@/components/ui/Button";
 import Header from "@/components/layout/Header";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
+import { chatService } from "@/services";
 
 export default function DashboardPage() {
   const { user, loading } = useAuth();
@@ -21,6 +22,7 @@ export default function DashboardPage() {
     e.stopPropagation();
     try {
       await classService.removeClass(classId, user.id);
+      await chatService.leaveAllChannelsForClass(user.id, classId);
       setUserClasses((prev) => prev.filter((c) => c.id !== classId));
     } catch (error) {
       console.error("Error leaving class:", error);

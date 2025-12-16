@@ -19,7 +19,7 @@ export default function StudyGroups({className, classSection}) {
     const getGroups = async () => {
       try {
         setLoading(true);
-        const res = await studyGroupService.getStudyGroups(id);
+        const res = await studyGroupService.getStudyGroups(id, user.id);
         const resMap = res.filter((group) => group.chat_type === "study-group");
         const dataMap = resMap.map((group) => {
           const readableDate = new Date(group.expires_at).toLocaleString();

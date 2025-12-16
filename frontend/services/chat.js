@@ -2,9 +2,9 @@ import api from "./api";
 
 export const chatService = {
   // Get channels for a class
-  async getGeneralChannel(classId) {
+  async getGeneralChannel(classId, userId) {
     try {
-      return await api.get(`/chats/class/${classId}/general`);
+      return await api.get(`/chats/class/${classId}/general`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
@@ -21,6 +21,14 @@ export const chatService = {
   async getChannelsForUser(userId, classId){
     try{
       return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  async leaveAllChannelsForClass(userId, classId){
+    try{
+      return await api.post(`/chats/class/${classId}/leave/all`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
