@@ -8,6 +8,7 @@ import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
 import { useToast } from "@/components/ui/ToastProvider";
+import { chatService, studyGroupService } from "@/services";
 
 export default function OnboardingPage() {
   const { addToast } = useToast()
@@ -30,6 +31,7 @@ export default function OnboardingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currClasses, setCurrClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
+  const [generalChatIds, setGeneralChatIds] = useState([]);
 
   // Filter available classes for manual search
   const classes = allClasses.filter(
@@ -47,10 +49,31 @@ export default function OnboardingPage() {
  
   const handleAddClass = (cls) => {
     setCurrClasses((prev) => [...prev, cls]);
+    async function joinGeneralChat() {
+      const generalChat = await chatService.getGeneralChannel(cls.id);
+      const generalChatId = generalChat[0].chat_id;
+      console.log(generalChatId);
+
+      setGeneralChatIds((prev) => [...prev, {classId: cls.id, chatId: generalChatId}]);
+      await studyGroupService.joinStudyGroup(user.id, generalChatId).catch((e) => {
+        console.error("Error joining general chat for class " + cls.id, e);
+      });
+    }
+    joinGeneralChat();
   };
 
   const handleRemoveClass = (id) => {
     setCurrClasses((prev) => prev.filter((cls) => cls.id !== id));
+    async function leaveGeneralChat() {
+      const chatObj = generalChatIds.find((obj) => obj.classId === id);
+      if (chatObj) {
+        await studyGroupService.leaveStudyGroup(user.id, chatObj.chatId).catch((e) => {
+          console.error("Error leaving general chat for class " + id, e);
+        });
+        setGeneralChatIds((prev) => prev.filter((obj) => obj.classId !== id));
+      }
+    }
+    leaveGeneralChat();
   };
 
   const handleIcsUpload = (uploadedData) => {

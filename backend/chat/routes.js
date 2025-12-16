@@ -248,13 +248,13 @@ chatRouter.put("/:chatId", async (req, res) => {
 
 /**
  * @swagger
- * /chats/class/{classId}/join:
+ * /chats/class/{chatId}/join:
  *   post:
  *     tags: [Chat]
  *     summary: Join a chat for a class
  *     parameters:
  *       - in: path
- *         name: classId
+ *         name: chatId
  *         required: true
  *         schema:
  *           type: string
@@ -273,11 +273,11 @@ chatRouter.put("/:chatId", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-chatRouter.post("/class/:classId/join", async (req, res) => {
-  const { classId } = req.params;
+chatRouter.post("/class/:chatId/join", async (req, res) => {
+  const { chatId } = req.params;
   const { userId } = req.query;
-  log("info", `Joining chat ${classId} for user ${userId}`);
-  const { data, error } = await joinChat(classId, userId);
+  log("info", `Joining chat ${chatId} for user ${userId}`);
+  const { data, error } = await joinChat(chatId, userId);
   if (error) {
     log("error", `Error joining chat: ${error.message}`);
     return res.status(500).json({ error: error.message });
@@ -287,13 +287,13 @@ chatRouter.post("/class/:classId/join", async (req, res) => {
 
 /**
  * @swagger
- * /chats/class/{classId}/leave:
+ * /chats/class/{chatId}/leave:
  *   post:
  *     tags: [Chat]
  *     summary: Leave a chat for a class
  *     parameters:
  *       - in: path
- *         name: classId
+ *         name: chatId
  *         required: true
  *         schema:
  *           type: string
@@ -312,11 +312,11 @@ chatRouter.post("/class/:classId/join", async (req, res) => {
  *             schema:
  *               $ref: '#/components/schemas/ErrorResponse'
  */
-chatRouter.post("/class/:classId/leave", async (req, res) => {
-  const { classId } = req.params;
+chatRouter.post("/class/:chatId/leave", async (req, res) => {
+  const { chatId } = req.params;
   const { userId } = req.query;
-  log("info", `Leaving chat ${classId} for user ${userId}`);
-  const { data, error } = await leaveChat(classId, userId);
+  log("info", `Leaving chat ${chatId} for user ${userId}`);
+  const { data, error } = await leaveChat(chatId, userId);
   if (error) {
     log("error", `Error leaving chat: ${error.message}`);
     return res.status(500).json({ error: error.message });

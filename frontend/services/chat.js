@@ -2,6 +2,14 @@ import api from "./api";
 
 export const chatService = {
   // Get channels for a class
+  async getGeneralChannel(classId) {
+    try {
+      return await api.get(`/chats/class/${classId}/general`);
+    } catch (error) {
+      throw error;
+    }
+  },
+
   async getChannels(classId) {
     try {
       return await api.get(`/chat/channels?classId=${classId}`);
