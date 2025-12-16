@@ -49,31 +49,10 @@ export default function OnboardingPage() {
  
   const handleAddClass = (cls) => {
     setCurrClasses((prev) => [...prev, cls]);
-    async function joinGeneralChat() {
-      const generalChat = await chatService.getGeneralChannel(cls.id);
-      const generalChatId = generalChat[0].chat_id;
-      console.log(generalChatId);
-
-      setGeneralChatIds((prev) => [...prev, {classId: cls.id, chatId: generalChatId}]);
-      await studyGroupService.joinStudyGroup(user.id, generalChatId).catch((e) => {
-        console.error("Error joining general chat for class " + cls.id, e);
-      });
-    }
-    joinGeneralChat();
   };
 
   const handleRemoveClass = (id) => {
     setCurrClasses((prev) => prev.filter((cls) => cls.id !== id));
-    async function leaveGeneralChat() {
-      const chatObj = generalChatIds.find((obj) => obj.classId === id);
-      if (chatObj) {
-        await studyGroupService.leaveStudyGroup(user.id, chatObj.chatId).catch((e) => {
-          console.error("Error leaving general chat for class " + id, e);
-        });
-        setGeneralChatIds((prev) => prev.filter((obj) => obj.classId !== id));
-      }
-    }
-    leaveGeneralChat();
   };
 
   const handleIcsUpload = (uploadedData) => {
@@ -110,6 +89,16 @@ export default function OnboardingPage() {
       }
       if(!condition1 && !condition2) {
         await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
+        async function joinAllGeneralChats() {
+          for (let cls of currClasses) {
+            const generalChat = await chatService.getGeneralChannel(cls.id);
+            const generalChatId = generalChat[0].chat_id;
+            await studyGroupService.joinStudyGroup(user.id, generalChatId).catch((e) => {
+              console.error("Error joining general chat for class " + cls.id, e);
+            });
+          }
+        }
+        await joinAllGeneralChats();
         router.push("/dashboard");
       }
     } catch (e) {
