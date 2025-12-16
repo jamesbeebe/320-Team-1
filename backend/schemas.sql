@@ -103,12 +103,12 @@ as $$
     c.name as chat_name,
     c.class_id,
     c.expires_at,
-    (u.user_id is not null) as enrolled_in,
+    true as enrolled_in,
     c.type as chat_type
   from chats c
-  left join user_chats u
-    on u.chat_id = c.id 
-    and u.user_id = userId
+  join user_chats u
+    on u.chat_id = c.id
+   and u.user_id = userId
   where c.class_id = classId
     and c.expires_at > date;
 $$;

@@ -8,6 +8,7 @@ import IcsFileUpload from "@/components/ui/IcsFileUpload";
 import { useAuth } from "@/context/AuthContext";
 import { classService } from "@/services/classes";
 import { useToast } from "@/components/ui/ToastProvider";
+import { chatService, studyGroupService } from "@/services";
 
 export default function OnboardingPage() {
   const { addToast } = useToast()
@@ -30,6 +31,7 @@ export default function OnboardingPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currClasses, setCurrClasses] = useState([]);
   const [allClasses, setAllClasses] = useState([]);
+  const [generalChatIds, setGeneralChatIds] = useState([]);
 
   // Filter available classes for manual search
   const classes = allClasses.filter(
@@ -87,6 +89,16 @@ export default function OnboardingPage() {
       }
       if(!condition1 && !condition2) {
         await classService.bulkEnroll(currClasses.map(c => c.id), user.id);
+        async function joinAllGeneralChats() {
+          for (let cls of currClasses) {
+            const generalChat = await chatService.getGeneralChannel(cls.id, user.id);
+            const generalChatId = generalChat[0].chat_id;
+            await studyGroupService.joinStudyGroup(user.id, generalChatId).catch((e) => {
+              console.error("Error joining general chat for class " + cls.id, e);
+            });
+          }
+        }
+        await joinAllGeneralChats();
         router.push("/dashboard");
       }
     } catch (e) {

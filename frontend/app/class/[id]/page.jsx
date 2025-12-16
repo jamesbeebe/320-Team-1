@@ -9,6 +9,7 @@ import { classService } from "@/services/classes";
 import StudyGroups from "@/components/class/StudyGroups";
 import Classmates from "@/components/class/Classmates";
 import ChatInterface from "@/components/class/ChatInterface";
+import { chatService } from "@/services/chat";
 
 const tabs = [
   { id: "study-groups", name: "Study Groups", component: StudyGroups },
@@ -28,6 +29,7 @@ export default function ClassDetailsPage() {
   const handleLeaveClass = async () => {
     try {
       await classService.removeClass(classId, user.id);
+      await chatService.leaveAllChannelsForClass(user.id, classId);
       router.push("/dashboard");
       router.refresh();
     } catch (error) {

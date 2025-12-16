@@ -4,7 +4,7 @@ export const studyGroupService = {
   // Get study groups for a class
   async getStudyGroups(classId, userId) {   
     try {
-      return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
+      return await api.get(`/chats/class/${classId}/study-group`, {params: {userId: userId}});
     } catch (error) {
       throw error;
     }
