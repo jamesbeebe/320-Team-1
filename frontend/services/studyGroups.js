@@ -2,9 +2,9 @@ import api from './api';
 
 export const studyGroupService = {
   // Get study groups for a class
-  async getStudyGroups(classId, userId) {   
+  async getStudyGroups(classId) {   
     try {
-      return await api.get(`/chats/class/${classId}`, {params: {userId: userId}});
+      return await api.get(`/chats/class/${classId}/study-group`);
     } catch (error) {
       throw error;
     }

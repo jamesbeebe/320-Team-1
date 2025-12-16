@@ -21,18 +21,21 @@ export async function getAllChatsForClass(classId, userId) {
 export async function getSpecificTypeForClass(classId, type) {
   const { data, error } = await supabase
     .from("chats")
-    .select(
-      `
-      id,
-      name,
-      expires_at
-    `
-    )
+    .select("id, name, class_id, expires_at, type")
     .eq("class_id", classId)
     .eq("type", type)
     .gte("expires_at", new Date().toISOString())
     .order("expires_at", { ascending: true });
-  return { data, error };
+
+  const formatted = data?.map(chat => ({
+    chat_id: chat.id,
+    chat_name: chat.name,
+    class_id: chat.class_id,
+    expires_at: chat.expires_at,
+    chat_type: chat.type,
+  }));
+
+  return { data: formatted, error };
 }
 
 export async function createChatForClass(classId, name, expiresAt, userId) {
