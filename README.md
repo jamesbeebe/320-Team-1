@@ -5,36 +5,56 @@ Class Match is a full-stack study-group platform built for UMass students. It he
 ## Live Demo
 
 [Try the live app](https://320teamone-oyrl.vercel.app/login)
-
 ## App Screenshots
+> **Tip:** Click any image to expand it for a closer view.
+<table>
+  <tr>
+    <td align="center"><strong>Sign Up</strong></td>
+    <td align="center"><strong>Login</strong></td>
+    <td align="center"><strong>Onboarding</strong></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/screenshots/signup.png">
+        <img src="./docs/screenshots/signup.png" alt="Sign Up" width="25%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/login.png">
+        <img src="./docs/screenshots/login.png" alt="Login" width="25%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/onboarding.png">
+        <img src="./docs/screenshots/onboarding.png" alt="Onboarding" width="25%" />
+      </a>
+    </td>
+  </tr>
+  <tr>
+    <td align="center"><strong>Dashboard</strong></td>
+    <td align="center"><strong>Study Groups</strong></td>
+    <td align="center"><strong>Chat</strong></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/screenshots/dashboard.png">
+        <img src="./docs/screenshots/dashboard.png" alt="Dashboard" width="25%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/study-groups.png">
+        <img src="./docs/screenshots/study-groups.png" alt="Study Groups" width="25%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/screenshots/chat.png">
+        <img src="./docs/screenshots/chat.png" alt="Chat" width="25%" />
+      </a>
+    </td>
+  </tr>
+</table>
 
-### Featured Screenshots
 
-#### Dashboard
-![Dashboard](./docs/screenshots/dashboard.png)
-
-#### Chat
-![Chat](./docs/screenshots/chat.png)
-
-#### Study Groups
-![Study Groups](./docs/screenshots/study-groups.png)
-
-<details>
-<summary>More Screenshots</summary>
-
-#### Onboarding
-![Onboarding](./docs/screenshots/onboarding.png)
-
-#### Login
-![Login Page](./docs/screenshots/login.png)
-
-#### Sign Up
-![Sign Up](./docs/screenshots/signup.png)
-
-#### Profile
-![Profile](./docs/screenshots/profile.png)
-
-</details>
 
 ## Overview
 
@@ -74,15 +94,31 @@ The goal of Class Match was to make it easier for students to find peers in thei
 - Swagger UI
 
 ## System Design
-
-### Architecture Diagram
-![Architecture Diagram](./docs/architecture-diagram.png)
-
-### UI Diagram
-![UI Diagram](./docs/ui-diagram.png)
-
-### ER Diagram
-![ER Diagram](./docs/er-diagram.png)
+> **Tip:** Click any image to expand it for a closer view.
+<table>
+  <tr>
+    <td align="center"><strong>Architecture Diagram</strong></td>
+    <td align="center"><strong>UI Diagram</strong></td>
+    <td align="center"><strong>ER Diagram</strong></td>
+  </tr>
+  <tr>
+    <td align="center">
+      <a href="./docs/architecture-diagram.png">
+        <img src="./docs/architecture-diagram.png" alt="Architecture Diagram" width="32%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/ui-diagram.png">
+        <img src="./docs/ui-diagram.png" alt="UI Diagram" width="32%" />
+      </a>
+    </td>
+    <td align="center">
+      <a href="./docs/er-diagram.png">
+        <img src="./docs/er-diagram.png" alt="ER Diagram" width="32%" />
+      </a>
+    </td>
+  </tr>
+</table>
 
 ## Technical Challenges
 
