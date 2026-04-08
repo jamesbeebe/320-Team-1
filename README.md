@@ -1,6 +1,6 @@
 # Class Match
 
-Class Match is a full-stack study-group platform built for UMass students. It helps users add classes, connect with classmates, join real-time chats, and organize study groups in one place.
+Class Match is a full-stack study-group platform built for UMass students. It helps users add classes, connect with classmates, join real-time chats, and organize study groups in one place. The interface was designed to support both desktop and mobile-friendly use across key workflows.
 
 ## Live Demo
 
@@ -8,14 +8,33 @@ Class Match is a full-stack study-group platform built for UMass students. It he
 
 ## App Screenshots
 
-### Login
-![Login Page](./docs/screenshots/login.png)
+### Featured Screenshots
 
-### Dashboard / Class View
+#### Dashboard
 ![Dashboard](./docs/screenshots/dashboard.png)
 
-### Chat / Study Group View
-![Chat View](./docs/screenshots/chat.png)
+#### Chat
+![Chat](./docs/screenshots/chat.png)
+
+#### Study Groups
+![Study Groups](./docs/screenshots/study-groups.png)
+
+<details>
+<summary>More Screenshots</summary>
+
+#### Onboarding
+![Onboarding](./docs/screenshots/onboarding.png)
+
+#### Login
+![Login Page](./docs/screenshots/login.png)
+
+#### Sign Up
+![Sign Up](./docs/screenshots/signup.png)
+
+#### Profile
+![Profile](./docs/screenshots/profile.png)
+
+</details>
 
 ## Overview
 
@@ -29,6 +48,7 @@ The goal of Class Match was to make it easier for students to find peers in thei
 - Add and remove enrolled classes
 - Schedule import support
 - Authentication and protected routes
+- Mobile-friendly interface
 - Backend API documentation through Swagger UI
 
 ## Tech Stack
