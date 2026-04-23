@@ -26,7 +26,7 @@ const PORT = 8080;
 // CORS configuration to allow frontend requests
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "http://localhost"],
+    origin: ["*"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
